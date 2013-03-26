@@ -1,4 +1,4 @@
-package pl.edu.agh.morcinek.uml.logic;
+package com.morcinek.uml.logic;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -8,11 +8,12 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import com.morcinek.uml.graph.SimulationVisualization;
 import org.w3c.dom.Element;
 
-import pl.edu.agh.morcinek.uml.gui.GuiView;
-import pl.edu.agh.morcinek.uml.logic.object.ClassObject;
-import pl.edu.agh.morcinek.uml.parser.java.JavaParser;
+import com.morcinek.uml.gui.GuiView;
+import com.morcinek.uml.logic.object.ClassObject;
+import com.morcinek.uml.parser.java.JavaParser;
 
 public class ClassFinder {
 
@@ -66,7 +67,7 @@ public class ClassFinder {
 	private static String developmentMode(String[] args, boolean isDeveloped){
 		String pathName;
 		if(isDeveloped){
-			  pathName = "Test1";
+			  pathName = "c:\\dev\\repositories\\taptera\\android-maven-build\\apps\\sunbelt\\src\\main\\java";
 		} else {
 			pathName = args[0];
 		}
@@ -89,20 +90,22 @@ public class ClassFinder {
 					System.out.println(" > " + name + " : " + map.get(name));
 				}
 			}
-			final ClassObject files = transform.getObject();
-			SwingUtilities.invokeLater(new Runnable() {
-
-				public void run() {
-					GuiView guiView = new GuiView("diagram", 3, 3);
-					for (ClassObject object : files.getClassDeclarations()) {
-						guiView.addClass(object);
-					}
-
-					guiView.setRelations(relations);
-
-					guiView.showDiagramGrid();
-				}
-			});
+//			final ClassObject files = transform.getObject();
+//			SwingUtilities.invokeLater(new Runnable() {
+//
+//				public void run() {
+//					GuiView guiView = new GuiView("diagram", 3, 3);
+//					for (ClassObject object : files.getClassDeclarations()) {
+//						guiView.addClass(object);
+//					}
+//
+//					guiView.setRelations(relations);
+//
+//					guiView.showDiagramGrid();
+//				}
+//			});
+            SimulationVisualization simulationVisualization = new SimulationVisualization(relations);
+            simulationVisualization.showGraph();
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.out.println("Error occured!!\nThere is no directory path in execution argument!");
 		} catch (Exception e) {

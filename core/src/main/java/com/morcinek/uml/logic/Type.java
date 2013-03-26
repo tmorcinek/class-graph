@@ -1,4 +1,4 @@
-package pl.edu.agh.morcinek.uml.logic;
+package com.morcinek.uml.logic;
 
 import java.util.LinkedList;
 import java.util.List;

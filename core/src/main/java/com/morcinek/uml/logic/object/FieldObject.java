@@ -1,10 +1,10 @@
-package pl.edu.agh.morcinek.uml.logic.object;
+package com.morcinek.uml.logic.object;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import pl.edu.agh.morcinek.uml.logic.Type;
+import com.morcinek.uml.logic.Type;
 
 public class FieldObject extends DeclarationObject{
 

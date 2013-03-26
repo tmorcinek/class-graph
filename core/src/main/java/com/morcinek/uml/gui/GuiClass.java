@@ -1,4 +1,4 @@
-package pl.edu.agh.morcinek.uml.gui;
+package com.morcinek.uml.gui;
 
 import java.awt.Font;
 import java.awt.Graphics;

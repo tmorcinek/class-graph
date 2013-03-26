@@ -1,8 +1,8 @@
-package pl.edu.agh.morcinek.uml.logic.object;
+package com.morcinek.uml.logic.object;
 
 import java.util.Map;
 
-import pl.edu.agh.morcinek.uml.parser.java.JavaParser.ModifierSet;
+import com.morcinek.uml.parser.java.JavaParser.ModifierSet;
 
 public abstract class DeclarationObject{
 	

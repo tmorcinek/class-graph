@@ -1,4 +1,4 @@
-package pl.edu.agh.morcinek.uml.gui;
+package com.morcinek.uml.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics;
@@ -14,7 +14,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import pl.edu.agh.morcinek.uml.logic.object.ClassObject;
+import com.morcinek.uml.logic.object.ClassObject;
 
 public class GuiView extends JFrame {
 

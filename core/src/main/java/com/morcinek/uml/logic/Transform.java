@@ -1,4 +1,4 @@
-package pl.edu.agh.morcinek.uml.logic;
+package com.morcinek.uml.logic;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -7,11 +7,11 @@ import java.util.Map;
 
 import org.w3c.dom.Element;
 
-import pl.edu.agh.morcinek.uml.logic.object.ClassObject;
-import pl.edu.agh.morcinek.uml.logic.object.FieldObject;
-import pl.edu.agh.morcinek.uml.logic.object.MethodObject;
-import pl.edu.agh.morcinek.uml.parser.java.JavaParser.ModifierSet;
-import pl.edu.agh.morcinek.uml.util.TreeUtil;
+import com.morcinek.uml.logic.object.ClassObject;
+import com.morcinek.uml.logic.object.FieldObject;
+import com.morcinek.uml.logic.object.MethodObject;
+import com.morcinek.uml.parser.java.JavaParser.ModifierSet;
+import com.morcinek.uml.util.TreeUtil;
 
 /**
  * 
@@ -56,9 +56,9 @@ public class Transform {
 		
 		Map<String,ClassObject> classObjectMap = getClassObjectsMap();	// wszystkie klasy z wszystkich plikow
 		for(ClassObject classObject: classObjectMap.values()){
-			Map<String,Integer> typesMap = classObject.globalTypes();	// wszystkie typy które wystêpuj¹ w przegladanej klasie 'classObject'
+			Map<String,Integer> typesMap = classObject.globalTypes();	// wszystkie typy ktï¿½re wystï¿½pujï¿½ w przegladanej klasie 'classObject'
 			
-			for(String typeName: typesMap.keySet()){		// dany typ wystêpuj¹cy w klasie 'classObject'
+			for(String typeName: typesMap.keySet()){		// dany typ wystï¿½pujï¿½cy w klasie 'classObject'
 				
 				// dany typ jest w mapie wszystkich klas, drugi warunek odnosnie stworzenie instancji obiektu w funkcji statycznej
 				if(classObjectMap.containsKey(typeName) && !classObject.getFullClassName().equals(typeName)){

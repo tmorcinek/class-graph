@@ -1,0 +1,1638 @@
+
+/*
+ * Copyright � 2002 Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
+ * California 95054, U.S.A. All rights reserved.  Sun Microsystems, Inc. has
+ * intellectual property rights relating to technology embodied in the product
+ * that is described in this document. In particular, and without limitation,
+ * these intellectual property rights may include one or more of the U.S.
+ * patents listed at http://www.sun.com/patents and one or more additional
+ * patents or pending patent applications in the U.S. and in other countries.
+ * U.S. Government Rights - Commercial software. Government users are subject
+ * to the Sun Microsystems, Inc. standard license agreement and applicable
+ * provisions of the FAR and its supplements.  Use is subject to license terms.
+ * Sun,  Sun Microsystems,  the Sun logo and  Java are trademarks or registered
+ * trademarks of Sun Microsystems, Inc. in the U.S. and other countries.  This
+ * product is covered and controlled by U.S. Export Control laws and may be
+ * subject to the export or import laws in other countries.  Nuclear, missile,
+ * chemical biological weapons or nuclear maritime end uses or end users,
+ * whether direct or indirect, are strictly prohibited.  Export or reexport
+ * to countries subject to U.S. embargo or to entities identified on U.S.
+ * export exclusion lists, including, but not limited to, the denied persons
+ * and specially designated nationals lists is strictly prohibited.
+ */
+
+options {
+  JAVA_UNICODE_ESCAPE = true;
+  ERROR_REPORTING = false;
+  STATIC = false;
+}
+
+PARSER_BEGIN(JavaParser)
+
+package com.morcinek.uml.parser.java;
+
+import java.io.*;
+import com.morcinek.uml.util.*;
+import org.w3c.dom.*;
+
+/**
+ * Grammar to parse Java version 1.5
+ * @author Sreenivasa Viswanadha - Simplified and enhanced for 1.5
+ */
+public class JavaParser
+{
+   /**
+    * Class to hold modifiers.
+    */
+   static public final class ModifierSet
+   {
+     /* Definitions of the bits in the modifiers field.  */
+     public static final int PUBLIC = 0x0001;
+     public static final int PROTECTED = 0x0002;
+     public static final int PRIVATE = 0x0004;
+     public static final int ABSTRACT = 0x0008;
+     public static final int STATIC = 0x0010;
+     public static final int FINAL = 0x0020;
+     public static final int SYNCHRONIZED = 0x0040;
+     public static final int NATIVE = 0x0080;
+     public static final int TRANSIENT = 0x0100;
+     public static final int VOLATILE = 0x0200;
+     public static final int STRICTFP = 0x1000;
+
+     /** A set of accessors that indicate whether the specified modifier
+         is in the set. */
+
+     public boolean isPublic(int modifiers)
+     {
+       return (modifiers & PUBLIC) != 0;
+     }
+
+     public boolean isProtected(int modifiers)
+     {
+       return (modifiers & PROTECTED) != 0;
+     }
+
+     public boolean isPrivate(int modifiers)
+     {
+       return (modifiers & PRIVATE) != 0;
+     }
+
+     public boolean isStatic(int modifiers)
+     {
+       return (modifiers & STATIC) != 0;
+     }
+
+     public boolean isAbstract(int modifiers)
+     {
+       return (modifiers & ABSTRACT) != 0;
+     }
+
+     public boolean isFinal(int modifiers)
+     {
+       return (modifiers & FINAL) != 0;
+     }
+
+     public boolean isNative(int modifiers)
+     {
+       return (modifiers & NATIVE) != 0;
+     }
+
+     public boolean isStrictfp(int modifiers)
+     {
+       return (modifiers & STRICTFP) != 0;
+     }
+
+     public boolean isSynchronized(int modifiers)
+     {
+       return (modifiers & SYNCHRONIZED) != 0;
+     }
+
+     public boolean isTransient(int modifiers)
+      {
+       return (modifiers & TRANSIENT) != 0;
+     }
+
+     public boolean isVolatile(int modifiers)
+     {
+       return (modifiers & VOLATILE) != 0;
+     }
+
+     /**
+      * Removes the given modifier.
+      */
+     static int removeModifier(int modifiers, int mod)
+     {
+        return modifiers & ~mod;
+     }
+   }
+
+   public JavaParser(String fileName)
+   {
+      this(System.in);
+      try { ReInit(new FileInputStream(new File(fileName))); }
+      catch(Exception e) { e.printStackTrace(); }
+   }
+
+  public static Element main(String fileName) {
+    JavaParser parser;
+    try
+    {
+      parser = new JavaParser(new java.io.FileInputStream(fileName));
+    }
+    catch (java.io.FileNotFoundException e)
+    {
+      System.out.println("Java Parser Version 1.1:  File " + fileName + " not found.");
+      return null;
+    }
+    
+    Element element = null;
+    try
+    {
+	  element = parser.CompilationUnit();
+      System.out.println("Java Parser Version 1.1: "+  fileName +" parsed successfully.");
+    }
+    catch (ParseException e)
+    {
+      System.out.println(e.getMessage());
+      System.out.println("Java Parser Version 1.1:  Encountered errors during parse.");
+    } 
+    
+    return element;
+  }
+
+}
+
+PARSER_END(JavaParser)
+
+/* WHITE SPACE */
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/* RESERVED WORDS AND LITERALS */
+
+TOKEN :
+{
+  < ABSTRACT: "abstract" >
+| < ASSERT: "assert" >
+| < BOOLEAN: "boolean" >
+| < BREAK: "break" >
+| < BYTE: "byte" >
+| < CASE: "case" >
+| < CATCH: "catch" >
+| < CHAR: "char" >
+| < CLASS: "class" >
+| < CONST: "const" >
+| < CONTINUE: "continue" >
+| < _DEFAULT: "default" >
+| < DO: "do" >
+| < DOUBLE: "double" >
+| < ELSE: "else" >
+| < ENUM: "enum" >
+| < EXTENDS: "extends" >
+| < FALSE: "false" >
+| < FINAL: "final" >
+| < FINALLY: "finally" >
+| < FLOAT: "float" >
+| < FOR: "for" >
+| < GOTO: "goto" >
+| < IF: "if" >
+| < IMPLEMENTS: "implements" >
+| < IMPORT: "import" >
+| < INSTANCEOF: "instanceof" >
+| < INT: "int" >
+| < INTERFACE: "interface" >
+| < LONG: "long" >
+| < NATIVE: "native" >
+| < NEW: "new" >
+| < NULL: "null" >
+| < PACKAGE: "package">
+| < PRIVATE: "private" >
+| < PROTECTED: "protected" >
+| < PUBLIC: "public" >
+| < RETURN: "return" >
+| < SHORT: "short" >
+| < STATIC: "static" >
+| < STRICTFP: "strictfp" >
+| < SUPER: "super" >
+| < SWITCH: "switch" >
+| < SYNCHRONIZED: "synchronized" >
+| < THIS: "this" >
+| < THROW: "throw" >
+| < THROWS: "throws" >
+| < TRANSIENT: "transient" >
+| < TRUE: "true" >
+| < TRY: "try" >
+| < VOID: "void" >
+| < VOLATILE: "volatile" >
+| < WHILE: "while" >
+}
+
+/* LITERALS */
+
+TOKEN :
+{
+  < INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+}
+
+/* IDENTIFIERS */
+
+TOKEN :
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+/* SEPARATORS */
+
+TOKEN :
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < SEMICOLON: ";" >
+| < COMMA: "," >
+| < DOT: "." >
+| < AT: "@" >
+}
+
+/* OPERATORS */
+
+TOKEN :
+{
+  < ASSIGN: "=" >
+| < LT: "<" >
+| < BANG: "!" >
+| < TILDE: "~" >
+| < HOOK: "?" >
+| < COLON: ":" >
+| < EQ: "==" >
+| < LE: "<=" >
+| < GE: ">=" >
+| < NE: "!=" >
+| < SC_OR: "||" >
+| < SC_AND: "&&" >
+| < INCR: "++" >
+| < DECR: "--" >
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < STAR: "*" >
+| < SLASH: "/" >
+| < BIT_AND: "&" >
+| < BIT_OR: "|" >
+| < XOR: "^" >
+| < REM: "%" >
+| < LSHIFT: "<<" >
+| < PLUSASSIGN: "+=" >
+| < MINUSASSIGN: "-=" >
+| < STARASSIGN: "*=" >
+| < SLASHASSIGN: "/=" >
+| < ANDASSIGN: "&=" >
+| < ORASSIGN: "|=" >
+| < XORASSIGN: "^=" >
+| < REMASSIGN: "%=" >
+| < LSHIFTASSIGN: "<<=" >
+| < RSIGNEDSHIFTASSIGN: ">>=" >
+| < RUNSIGNEDSHIFTASSIGN: ">>>=" >
+| < ELLIPSIS: "..." >
+}
+
+/* >'s need special attention due to generics syntax. */
+TOKEN :
+{
+  < RUNSIGNEDSHIFT: ">>>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
+     input_stream.backup(2);
+  }
+| < RSIGNEDSHIFT: ">>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;
+     input_stream.backup(1);
+  }
+| < GT: ">" >
+}
+
+
+/*****************************************
+ * THE JAVA LANGUAGE GRAMMAR STARTS HERE *
+ *****************************************/
+
+/*
+ * Program structuring syntax follows.
+ */
+
+Element CompilationUnit():
+{
+	Element element = TreeUtil.createElement("fileName");
+	Element imports;
+	String name;
+}
+{
+  [ name = PackageDeclaration() { TreeUtil.createAndAppend(element, "package").setAttribute("name", name); }]
+  { imports = TreeUtil.createAndAppend(element, "imports"); }
+  ( name = ImportDeclaration() { TreeUtil.createAndAppend(imports, "import").setAttribute("name", name); })*
+  ( TypeDeclaration(element) )*
+  <EOF>
+  { return element; }
+}
+
+String PackageDeclaration():
+{ String s;}
+{
+  "package" s = Name() ";"
+  { return s; } 
+}
+
+String ImportDeclaration():
+{ 
+	Token t;	
+	String name = new String(),s; 
+}
+{
+  "import" [ t = "static" { name = name.concat(t.image); } ] 
+  s = Name() { name = name.concat(s); }   
+  [ "." "*" { name = name.concat(".*"); }] ";"
+  { return name; }
+}
+
+/*
+ * Modifiers. We match all modifiers in a single rule to reduce the chances of
+ * syntax errors for simple modifier mistakes. It will also enable us to give
+ * better error messages.
+ */
+
+int Modifiers():
+{
+   int modifiers = 0;
+}
+{
+ (
+  LOOKAHEAD(2)
+  (
+   "public" { modifiers |= ModifierSet.PUBLIC; }
+  |
+   "static" { modifiers |= ModifierSet.STATIC; }
+  |
+   "protected" { modifiers |= ModifierSet.PROTECTED; }
+  |
+   "private" { modifiers |= ModifierSet.PRIVATE; }
+  |
+   "final" { modifiers |= ModifierSet.FINAL; }
+  |
+   "abstract" { modifiers |= ModifierSet.ABSTRACT; }
+  |
+   "synchronized" { modifiers |= ModifierSet.SYNCHRONIZED; }
+  |
+   "native" { modifiers |= ModifierSet.NATIVE; }
+  |
+   "transient" { modifiers |= ModifierSet.TRANSIENT; }
+  |
+   "volatile" { modifiers |= ModifierSet.VOLATILE; }
+  |
+   "strictfp" { modifiers |= ModifierSet.STRICTFP; }
+  |
+   Annotation(null)
+  )
+ )*
+
+ {
+    return modifiers;
+ }
+}
+
+/*
+ * Declaration syntax follows.
+ */
+void TypeDeclaration(Element p_parentElement):
+{
+	int modifiers;
+}
+{
+  ";"
+|
+  modifiers = Modifiers() 
+  (
+     ClassOrInterfaceDeclaration(modifiers, p_parentElement)
+   |
+     EnumDeclaration(modifiers, p_parentElement) 
+   |
+     AnnotationTypeDeclaration(modifiers, p_parentElement) // { childElement.setAttribute("type","annotation" ); }
+  )
+}
+
+
+void ClassOrInterfaceDeclaration(int modifiers, Element p_parentElement):
+{
+   boolean isInterface = false;
+   Token t;
+   Element childElement;
+}
+{
+  { 
+    childElement = TreeUtil.createAndAppend(p_parentElement, "type");
+    childElement.setAttribute("modifiers", String.valueOf(modifiers)); 
+  }
+  ( t = "class" | t = "interface" { isInterface = true; } ) { childElement.setAttribute("type", t.image); }
+  t = <IDENTIFIER> { childElement.setAttribute("name", t.image); }
+  [ TypeParameters(childElement) ]
+  [ ExtendsList(isInterface, childElement) ]
+  [ ImplementsList(isInterface, childElement) ]
+  ClassOrInterfaceBody(isInterface, childElement)
+}
+
+void ExtendsList(boolean isInterface, Element p_parentElement):
+{
+   boolean extendsMoreThanOne = false;
+   Element childElement;
+   Element childType;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "extends");
+  }
+   "extends" { childType = TreeUtil.createAndAppend(childElement, "type"); childType.setAttribute("dimension","0"); } ClassOrInterfaceType(childType)
+   ( "," { childType = TreeUtil.createAndAppend(childElement, "type"); } ClassOrInterfaceType(childType) { extendsMoreThanOne = true; } )*
+   {
+      if (extendsMoreThanOne && !isInterface)
+         throw new ParseException("A class cannot extend more than one other class");
+   }
+}
+
+void ImplementsList(boolean isInterface, Element p_parentElement):
+{
+  Element childElement;
+  Element childType;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "implements"); }
+   "implements" { childType = TreeUtil.createAndAppend(childElement, "type"); } ClassOrInterfaceType(childType)
+   ( "," { childType = TreeUtil.createAndAppend(childElement, "type"); } ClassOrInterfaceType(childType) )*
+   {
+      if (isInterface)
+         throw new ParseException("An interface cannot implement other interfaces");
+   }
+}
+
+void EnumDeclaration(int modifiers, Element p_parentElement):
+{ 
+  Token t;
+  Element childElement;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "type");
+    childElement.setAttribute("modifiers",String.valueOf(modifiers));
+    childElement.setAttribute("type","enum" ); }
+  "enum" t = <IDENTIFIER> { childElement.setAttribute("name",t.image); }
+  [ ImplementsList(false, childElement) ]
+  EnumBody(childElement)
+}
+
+void EnumBody(Element p_parentElement):
+{ 
+  Element childElement; 
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "declarations"); }
+  "{"
+  EnumConstant(childElement) ( "," EnumConstant(childElement) )*
+  [ ";" ( ClassOrInterfaceBodyDeclaration(false, childElement) )* ]
+  "}"
+}
+
+void EnumConstant(Element p_parentElement):
+{}
+{
+   <IDENTIFIER> [ Arguments(p_parentElement) ] [ ClassOrInterfaceBody(false, p_parentElement) ]
+}
+
+void TypeParameters(Element p_parentElement):
+{
+  Element childElement;
+}
+{
+   { childElement = TreeUtil.createAndAppend(p_parentElement, "typeParameters"); }
+   "<" TypeParameter(childElement) ( "," TypeParameter(childElement) )* ">"
+}
+
+void TypeParameter(Element p_parentElement):
+{
+  Token t;
+  Element childElement;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "typeParameter"); }
+  t = <IDENTIFIER> { childElement.setAttribute("name",t.image); } 
+  [ TypeBound(childElement) ]
+}
+
+void TypeBound(Element p_parentElement):
+{}
+{
+  //TODO nie jest wyedytowane nie wiem czy ta sekcja sie do czegokolwiek przyda
+   "extends" ClassOrInterfaceType(p_parentElement) ( "&" ClassOrInterfaceType(p_parentElement) )*
+}
+
+void ClassOrInterfaceBody(boolean isInterface, Element p_parentElement):
+{
+  Element childElement;
+}
+{
+	{ childElement = TreeUtil.createAndAppend(p_parentElement, "declarations"); }
+  "{" ( ClassOrInterfaceBodyDeclaration(isInterface, childElement) )* "}"
+}
+
+void ClassOrInterfaceBodyDeclaration(boolean isInterface, Element p_parentElement):
+{
+   boolean isNestedInterface = false;
+   int modifiers;
+}
+{
+
+  LOOKAHEAD(2)
+  Initializer(p_parentElement)
+  {
+     if (isInterface)
+        throw new ParseException("An interface cannot have initializers");
+  }
+|
+  modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
+              // more checks, pass the modifiers down to the member
+  (
+      ClassOrInterfaceDeclaration(modifiers, p_parentElement)
+    |
+      EnumDeclaration(modifiers, p_parentElement)
+    |
+      LOOKAHEAD( [ TypeParameters() ] <IDENTIFIER> "(" )
+      ConstructorDeclaration(modifiers, p_parentElement)
+    |
+      LOOKAHEAD( Type(p_parentElement) <IDENTIFIER> ( "[" "]" )* ( "," | "=" | ";" ) )
+      FieldDeclaration(modifiers, p_parentElement)
+    |
+      MethodDeclaration(modifiers, p_parentElement)
+  )
+|
+  ";"
+
+}
+
+void FieldDeclaration(int modifiers, Element p_parentElement):
+{
+  Element childElement;
+}
+{
+  // Modifiers are already matched in the caller
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "field"); 
+    childElement.setAttribute("modifiers",String.valueOf(modifiers)); }
+  Type(childElement) VariableDeclarator(childElement) ( "," VariableDeclarator(childElement) )* ";"
+}
+
+void VariableDeclarator(Element p_parentElement):
+{}
+{
+  VariableDeclaratorId(p_parentElement) [ "=" VariableInitializer(p_parentElement) ]
+}
+
+void VariableDeclaratorId(Element p_parentElement):
+{
+  Element childElement;
+  Token t;
+  int dimension = 0;
+}
+{
+  t = <IDENTIFIER> ( "[" "]" { dimension++; } )* 
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "declarator");
+    childElement.setAttribute("name",t.image); 
+    childElement.setAttribute("dimension",String.valueOf(dimension));
+  } 
+}
+
+void VariableInitializer(Element p_parentElement):
+{}
+{
+  ArrayInitializer(p_parentElement)
+|
+  Expression(p_parentElement)
+}
+
+void ArrayInitializer(Element p_parentElement):
+{
+  Element childElement;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "array"); }
+  "{" [ VariableInitializer(childElement) ( LOOKAHEAD(2) "," VariableInitializer(childElement) )* ] [ "," ] "}"
+}
+
+void MethodDeclaration(int modifiers, Element p_parentElement):
+{
+  Element childElement;
+}
+{
+  // Modifiers already matched in the caller!
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "method"); 
+    childElement.setAttribute("modifiers",String.valueOf(modifiers)); }
+  [ TypeParameters(childElement) ]
+  ResultType(childElement)
+  MethodDeclarator(childElement) [ "throws" NameList(childElement) ]
+  
+  { childElement = TreeUtil.createAndAppend(childElement, "block"); } 
+  ( Block(childElement) | ";" )
+}
+
+void MethodDeclarator(Element p_parentElement):
+{
+  Token t;
+  int dimension = 0;
+}
+{
+  t = <IDENTIFIER>  { p_parentElement.setAttribute("name",t.image); }
+  FormalParameters(p_parentElement) ( "[" "]" { dimension++; } )* 
+}
+
+void FormalParameters(Element p_parentElement):
+{}
+{
+  "(" [ FormalParameter(p_parentElement) ( "," FormalParameter(p_parentElement) )* ] ")"
+}
+
+void FormalParameter(Element p_parentElement):
+{  
+  Element childElement;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "parameter"); }
+  [ "final" ] Type(childElement) [ "..." ] VariableDeclaratorId(childElement)
+}
+
+void ConstructorDeclaration(int modifiers,Element p_parentElement):
+{
+  Token t;
+  Element childElement;
+  Element typeElement;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "constructor"); 
+    childElement.setAttribute("modifiers",String.valueOf(modifiers)); 
+    typeElement = TreeUtil.createAndAppend(childElement, "type");
+    typeElement.setAttribute("name","constructor");
+  }
+  [ TypeParameters(childElement) ]
+  // Modifiers matched in the caller
+  t = <IDENTIFIER> { childElement.setAttribute("name",t.image); }
+  FormalParameters(childElement) [ "throws" NameList(childElement) ]
+  "{"
+    [ LOOKAHEAD(ExplicitConstructorInvocation(childElement)) ExplicitConstructorInvocation(childElement) ]
+    { childElement = TreeUtil.createAndAppend(childElement, "block"); }
+    ( BlockStatement(childElement) )*
+  "}"
+}
+
+void ExplicitConstructorInvocation(Element p_parentElement):
+{}
+{
+  LOOKAHEAD("this" Arguments(p_parentElement) ";")
+  "this" Arguments(p_parentElement) ";"
+|
+  [ LOOKAHEAD(2) PrimaryExpression(p_parentElement) "." ] "super" Arguments(p_parentElement) ";"
+}
+
+void Initializer(Element p_parentElement):
+{
+  Element childElement;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "initializer"); }
+  { childElement = TreeUtil.createAndAppend(childElement, "block"); }
+  [ "static" ] Block(childElement)
+}
+
+
+/*
+ * Type, name and expression syntax follows.
+ */
+
+void Type(Element p_parentElement):
+{
+  Element childElement;
+}
+{
+   LOOKAHEAD(2) ReferenceType(p_parentElement) { }
+ |
+   { childElement = TreeUtil.createAndAppend(p_parentElement,"type"); }
+   PrimitiveType(childElement)
+}
+
+void ReferenceType(Element p_parentElement):
+{
+  Element childElement = null;
+  int dimension = 0;
+}
+{
+   { childElement = TreeUtil.createAndAppend(p_parentElement,"type"); }
+   PrimitiveType(childElement) ( LOOKAHEAD(2) "[" "]" { dimension++; } )+
+   { childElement.setAttribute("dimension",String.valueOf(dimension)); }
+  |
+   { childElement = TreeUtil.createAndAppend(p_parentElement,"type"); }
+   ( ClassOrInterfaceType(childElement) ) ( LOOKAHEAD(2) "[" "]" { dimension++; } )*
+   { childElement.setAttribute("dimension",String.valueOf(dimension)); }
+}
+
+void ClassOrInterfaceType(Element p_parentElement):
+{ 
+  Token t;
+  String name;
+  Element childElement;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "classType"); }
+  t = <IDENTIFIER> { name = t.image; }  
+  [ LOOKAHEAD(2) TypeArguments(childElement) ]
+  
+  ( 
+  	LOOKAHEAD(2) "." t = <IDENTIFIER> 
+  	{ name.concat("."+ t.image); }  
+  	[ LOOKAHEAD(2) TypeArguments(childElement) ] 
+  )*
+  { childElement.setAttribute("name", name); }
+}
+
+void TypeArguments(Element p_parentElement):
+{
+  Element childElement;
+}
+{
+   { childElement = TreeUtil.createAndAppend(p_parentElement,"arguments"); }
+   "<" TypeArgument(childElement) 
+   ( "," TypeArgument(childElement) )* ">"
+}
+
+void TypeArgument(Element p_parentElement):
+{}
+{
+   ReferenceType(p_parentElement)
+ |
+   "?" [ WildcardBounds(p_parentElement) ]
+}
+
+void WildcardBounds(Element p_parentElement):
+{ Token t;}
+{
+  (
+   t = "extends" ReferenceType(p_parentElement)
+ |
+   t = "super" ReferenceType(p_parentElement)
+  )
+  { p_parentElement.setAttribute("type",t.image); }
+}
+
+
+void PrimitiveType(Element p_parentElement):
+{ 
+  Token t;
+}
+{
+(
+  t = "boolean"
+|
+  t = "char"
+|
+  t = "byte"
+|
+  t = "short"
+|
+  t = "int"
+|
+  t = "long"
+|
+  t = "float"
+|
+  t = "double"
+)
+  { p_parentElement.setAttribute("name",t.image); }
+}
+
+void ResultType(Element p_parentElement):
+{}
+{
+  "void"
+|
+  Type(p_parentElement) 
+}
+
+String Name():
+/*
+ * A lookahead of 2 is required below since "Name" can be followed
+ * by a ".*" when used in the context of an "ImportDeclaration".
+ */
+{ 
+	Token t;
+	String ret;
+}
+{
+  t = <IDENTIFIER> { ret = t.image; } 
+  ( LOOKAHEAD(2) "." t = <IDENTIFIER> { ret = ret.concat("." + t.image); } 
+  )*
+  { return ret; }
+}
+
+void NameList(Element p_parentElement):
+{
+  String name;
+}
+{
+  name = Name() { TreeUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name); }
+  ( "," name = Name() { TreeUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name); } )*
+}
+
+
+/*
+ * Expression syntax follows.
+ */
+
+void Expression(Element p_parentElement):
+/*
+ * This expansion has been written this way instead of:
+ *   Assignment() | ConditionalExpression()
+ * for performance reasons.
+ * However, it is a weakening of the grammar for it allows the LHS of
+ * assignments to be any conditional expression whereas it can only be
+ * a primary expression.  Consider adding a semantic predicate to work
+ * around this.
+ */
+{}
+{
+  ConditionalExpression(p_parentElement)
+  [
+    LOOKAHEAD(2)
+    AssignmentOperator() Expression(p_parentElement)
+  ]
+}
+
+void AssignmentOperator():
+{}
+{
+  "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|="
+}
+
+void ConditionalExpression(Element p_parentElement):
+{}
+{
+  ConditionalOrExpression(p_parentElement) [ "?" Expression(p_parentElement) ":" Expression(p_parentElement) ]
+}
+
+void ConditionalOrExpression(Element p_parentElement):
+{}
+{
+  ConditionalAndExpression(p_parentElement) ( "||" ConditionalAndExpression(p_parentElement) )*
+}
+
+void ConditionalAndExpression(Element p_parentElement):
+{}
+{
+  InclusiveOrExpression(p_parentElement) ( "&&" InclusiveOrExpression(p_parentElement) )*
+}
+
+void InclusiveOrExpression(Element p_parentElement):
+{}
+{
+  ExclusiveOrExpression(p_parentElement) ( "|" ExclusiveOrExpression(p_parentElement) )*
+}
+
+void ExclusiveOrExpression(Element p_parentElement):
+{}
+{
+  AndExpression(p_parentElement) ( "^" AndExpression(p_parentElement) )*
+}
+
+void AndExpression(Element p_parentElement):
+{}
+{
+  EqualityExpression(p_parentElement) ( "&" EqualityExpression(p_parentElement) )*
+}
+
+void EqualityExpression(Element p_parentElement):
+{}
+{
+  InstanceOfExpression( p_parentElement) ( ( "==" | "!=" ) InstanceOfExpression( p_parentElement) )*
+}
+
+void InstanceOfExpression(Element p_parentElement):
+{}
+{
+  RelationalExpression(p_parentElement) [ "instanceof" Type(p_parentElement) ]
+}
+
+void RelationalExpression(Element p_parentElement):
+{}
+{
+  ShiftExpression(p_parentElement) ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression(p_parentElement) )*
+}
+
+void ShiftExpression(Element p_parentElement):
+{}
+{
+  AdditiveExpression(p_parentElement) ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression(p_parentElement) )*
+}
+
+void AdditiveExpression(Element p_parentElement):
+{}
+{
+  MultiplicativeExpression(p_parentElement) ( ( "+" | "-" ) MultiplicativeExpression(p_parentElement) )*
+}
+
+void MultiplicativeExpression(Element p_parentElement):
+{}
+{
+  UnaryExpression(p_parentElement) ( ( "*" | "/" | "%" ) UnaryExpression(p_parentElement) )*
+}
+
+void UnaryExpression(Element p_parentElement):
+{}
+{
+  ( "+" | "-" ) UnaryExpression(p_parentElement)
+|
+  PreIncrementExpression(p_parentElement)
+|
+  PreDecrementExpression(p_parentElement)
+|
+  UnaryExpressionNotPlusMinus(p_parentElement)
+}
+
+void PreIncrementExpression(Element p_parentElement):
+{}
+{
+  "++" PrimaryExpression(p_parentElement)
+}
+
+void PreDecrementExpression(Element p_parentElement):
+{}
+{
+  "--" PrimaryExpression(p_parentElement)
+}
+
+void UnaryExpressionNotPlusMinus(Element p_parentElement):
+{}
+{
+  ( "~" | "!" ) UnaryExpression(p_parentElement)
+|
+  LOOKAHEAD( CastLookahead(p_parentElement) )
+  CastExpression(p_parentElement)
+|
+  PostfixExpression(p_parentElement)
+}
+
+// This production is to determine lookahead only.  The LOOKAHEAD specifications
+// below are not used, but they are there just to indicate that we know about
+// this.
+void CastLookahead(Element p_parentElement):
+{}
+{
+  LOOKAHEAD(2)
+  "(" PrimitiveType(p_parentElement)
+|
+  LOOKAHEAD("(" Type(p_parentElement) "[")
+  "(" Type(p_parentElement) "[" "]"
+|
+  "(" Type(p_parentElement) ")" ( "~" | "!" | "(" | <IDENTIFIER> | "this" | "super" | "new" | Literal() )
+}
+
+void PostfixExpression(Element p_parentElement):
+{}
+{
+  PrimaryExpression(p_parentElement) [ "++" | "--" ]
+}
+
+void CastExpression(Element p_parentElement):
+{}
+{
+  LOOKAHEAD("(" PrimitiveType(p_parentElement))
+  "(" Type(p_parentElement) ")" UnaryExpression(p_parentElement)
+|
+  "(" Type(p_parentElement) ")" UnaryExpressionNotPlusMinus(p_parentElement)
+}
+
+void PrimaryExpression(Element p_parentElement):
+{}
+{
+  PrimaryPrefix(p_parentElement) ( LOOKAHEAD(2) PrimarySuffix(p_parentElement) )*
+}
+
+void MemberSelector(Element p_parentElement):
+{}
+{
+  "." TypeArguments(p_parentElement) <IDENTIFIER>
+}
+
+void PrimaryPrefix(Element p_parentElement):
+{
+  String s = null;
+}
+{
+  s = Literal()
+  { if(s != null && p_parentElement.getNodeName().equals("array")){
+  	  p_parentElement.setAttribute("number",s);
+    } 
+  }
+|
+  "this"
+|
+  "super" "." <IDENTIFIER>
+|
+  "(" Expression(p_parentElement) ")"
+|
+  AllocationExpression(p_parentElement)
+|
+  LOOKAHEAD( ResultType(p_parentElement) "." "class" )
+  ResultType(p_parentElement) "." "class"
+|
+  Name()
+}
+
+void PrimarySuffix(Element p_parentElement):
+{}
+{
+  LOOKAHEAD(2)
+  "." "this"
+|
+  LOOKAHEAD(2)
+  "." AllocationExpression(p_parentElement)
+|
+  LOOKAHEAD(3)
+  MemberSelector(p_parentElement)
+|
+  "[" Expression(p_parentElement) "]"
+|
+  "." <IDENTIFIER>
+|
+  Arguments(p_parentElement)
+}
+
+String Literal():
+{
+  Token t;
+  String ret = null;
+}
+{
+(
+  t = <INTEGER_LITERAL> { ret = t.image; } 
+|
+  <FLOATING_POINT_LITERAL>
+|
+  <CHARACTER_LITERAL>
+|
+  <STRING_LITERAL>
+|
+  BooleanLiteral()
+|
+  NullLiteral()
+)
+  { return ret; }
+}
+
+void BooleanLiteral():
+{}
+{
+  "true"
+|
+  "false"
+}
+
+void NullLiteral():
+{}
+{
+  "null"
+}
+
+void Arguments(Element p_parentElement):
+{}
+{
+  "(" [ ArgumentList(p_parentElement) ] ")"
+}
+
+void ArgumentList(Element p_parentElement):
+{}
+{
+  Expression(p_parentElement) ( "," Expression(p_parentElement) )*
+}
+
+void AllocationExpression(Element p_parentElement):
+{}
+{
+  LOOKAHEAD(2)
+  "new" PrimitiveType(p_parentElement) ArrayDimsAndInits(p_parentElement)
+|
+  "new" ClassOrInterfaceType(p_parentElement) [ TypeArguments(p_parentElement) ]
+    (
+      ArrayDimsAndInits(p_parentElement)
+    |
+      Arguments(p_parentElement) [ ClassOrInterfaceBody(false, p_parentElement) ]
+    )
+}
+
+/*
+ * The third LOOKAHEAD specification below is to parse to PrimarySuffix
+ * if there is an expression between the "[...]".
+ */
+void ArrayDimsAndInits(Element p_parentElement):
+{
+  Element childElement;
+}
+{
+  LOOKAHEAD(2)
+  ( LOOKAHEAD(2) "["
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "array"); } 
+  Expression(childElement) "]" )+ ( LOOKAHEAD(2) "[" "]" )*
+|
+  ( "[" "]" )+ ArrayInitializer(p_parentElement)
+}
+
+
+/*
+ * Statement syntax follows.
+ */
+
+void Statement(Element p_parentElement):
+{}
+{
+  LOOKAHEAD(2)
+  LabeledStatement(p_parentElement)
+|
+  AssertStatement(p_parentElement)
+|
+  Block(p_parentElement)
+|
+  EmptyStatement()
+|
+  StatementExpression(p_parentElement) ";"
+|
+  SwitchStatement(p_parentElement)
+|
+  IfStatement(p_parentElement)
+|
+  WhileStatement(p_parentElement)
+|
+  DoStatement(p_parentElement)
+|
+  ForStatement(p_parentElement)
+|
+  BreakStatement()
+|
+  ContinueStatement()
+|
+  ReturnStatement(p_parentElement)
+|
+  ThrowStatement(p_parentElement)
+|
+  SynchronizedStatement(p_parentElement)
+|
+  TryStatement(p_parentElement)
+}
+
+void AssertStatement(Element p_parentElement):
+{}
+{
+  "assert" Expression(p_parentElement) [ ":" Expression(p_parentElement) ] ";"
+}
+
+void LabeledStatement(Element p_parentElement):
+{}
+{
+  <IDENTIFIER> ":" Statement(p_parentElement)
+}
+
+void Block(Element p_parentElement):
+{}
+{
+  "{" ( BlockStatement(p_parentElement) )* "}"
+}
+
+void BlockStatement(Element p_parentElement):
+{
+}
+{
+(
+  LOOKAHEAD([ "final" ] Type(p_parentElement) )
+  LocalVariableDeclaration(p_parentElement) ";"
+|
+  Statement(p_parentElement)
+|
+  ClassOrInterfaceDeclaration(0, p_parentElement)
+)
+
+}
+
+void LocalVariableDeclaration(Element p_parentElement):
+{
+  Element childElement;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "localVariable"); }
+  [ "final" ] Type(childElement) VariableDeclarator(childElement) ( "," VariableDeclarator(childElement) )*
+}
+
+void EmptyStatement():
+{}
+{
+  ";"
+}
+
+void StatementExpression(Element p_parentElement):
+/*
+ * The last expansion of this production accepts more than the legal
+ * Java expansions for StatementExpression.  This expansion does not
+ * use PostfixExpression for performance reasons.
+ */
+{}
+{
+  PreIncrementExpression(p_parentElement)
+|
+  PreDecrementExpression(p_parentElement)
+|
+  PrimaryExpression(p_parentElement)
+  [
+    "++"
+  |
+    "--"
+  |
+    AssignmentOperator() Expression(p_parentElement)
+  ]
+}
+
+void SwitchStatement(Element p_parentElement):
+{}
+{
+  "switch" "(" Expression(p_parentElement) ")" "{"
+    ( SwitchLabel(p_parentElement) ( BlockStatement(p_parentElement) )* )*
+  "}"
+}
+
+void SwitchLabel(Element p_parentElement):
+{}
+{
+  "case" Expression(p_parentElement) ":"
+|
+  "default" ":"
+}
+
+void IfStatement(Element p_parentElement):
+/*
+ * The disambiguating algorithm of JavaCC automatically binds dangling
+ * else's to the innermost if statement.  The LOOKAHEAD specification
+ * is to tell JavaCC that we know what we are doing.
+ */
+{}
+{
+  "if" "(" Expression(p_parentElement) ")" Statement(p_parentElement) [ LOOKAHEAD(1) "else" Statement(p_parentElement) ]
+}
+
+void WhileStatement(Element p_parentElement):
+{}
+{
+  "while" "(" Expression(p_parentElement) ")" Statement(p_parentElement)
+}
+
+void DoStatement(Element p_parentElement):
+{}
+{
+  "do" Statement(p_parentElement) "while" "(" Expression(p_parentElement) ")" ";"
+}
+
+void ForStatement(Element p_parentElement):
+{}
+{
+  "for" "("
+
+  (
+      LOOKAHEAD(Type(p_parentElement) <IDENTIFIER> ":")
+      Type(p_parentElement) <IDENTIFIER> ":" Expression(p_parentElement) 
+    |
+     [ ForInit(p_parentElement) ] ";" [ Expression(p_parentElement) ] ";" [ ForUpdate(p_parentElement) ]
+  )
+
+  ")" Statement(p_parentElement)
+}
+
+void ForInit(Element p_parentElement):
+{}
+{
+  LOOKAHEAD( [ "final" ] Type(p_parentElement) <IDENTIFIER> )
+  LocalVariableDeclaration(p_parentElement)
+|
+  StatementExpressionList(p_parentElement)
+}
+
+void StatementExpressionList(Element p_parentElement):
+{}
+{
+  StatementExpression(p_parentElement) ( "," StatementExpression(p_parentElement) )*
+}
+
+void ForUpdate(Element p_parentElement):
+{}
+{
+  StatementExpressionList(p_parentElement)
+}
+
+void BreakStatement():
+{}
+{
+  "break" [ <IDENTIFIER> ] ";"
+}
+
+void ContinueStatement():
+{}
+{
+  "continue" [ <IDENTIFIER> ] ";"
+}
+
+void ReturnStatement(Element p_parentElemnet):
+{}
+{
+  "return" [ Expression(p_parentElemnet) ] ";"
+}
+
+void ThrowStatement(Element p_parentElemnet):
+{}
+{
+  "throw" Expression(p_parentElemnet) ";"
+}
+
+void SynchronizedStatement(Element p_parentElemnet):
+{}
+{
+  "synchronized" "(" Expression(p_parentElemnet) ")" Block(p_parentElemnet)
+}
+
+void TryStatement(Element p_parentElemnet):
+/*
+ * Semantic check required here to make sure that at least one
+ * finally/catch is present.
+ */
+{}
+{
+  "try" Block(p_parentElemnet)
+  ( "catch" "(" FormalParameter(p_parentElemnet) ")" Block(p_parentElemnet) )*
+  [ "finally" Block(p_parentElemnet) ]
+}
+
+/* We use productions to match >>>, >> and > so that we can keep the
+ * type declaration syntax with generics clean
+ */
+
+void RUNSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
+   ">" ">" ">"
+  )
+}
+
+void RSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
+  ">" ">"
+  )
+}
+
+/* Annotation syntax follows. */
+
+void Annotation(Element p_parentElemnet):
+{}
+{
+   LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
+   NormalAnnotation(p_parentElemnet)
+ |
+   LOOKAHEAD( "@" Name() "(" )
+   SingleMemberAnnotation(p_parentElemnet)
+ |
+   MarkerAnnotation()
+}
+
+void NormalAnnotation(Element p_parentElemnet):
+{}
+{
+   "@" Name() "(" [ MemberValuePairs(p_parentElemnet) ] ")"
+}
+
+void MarkerAnnotation():
+{}
+{
+  "@" Name()
+}
+
+void SingleMemberAnnotation(Element p_parentElemnet):
+{}
+{
+  "@" Name() "(" MemberValue(p_parentElemnet) ")"
+}
+
+void MemberValuePairs(Element p_parentElemnet):
+{}
+{
+   MemberValuePair(p_parentElemnet) ( "," MemberValuePair(p_parentElemnet) )*
+}
+
+void MemberValuePair(Element p_parentElemnet):
+{}
+{
+    <IDENTIFIER> "=" MemberValue(p_parentElemnet)
+}
+
+void MemberValue(Element p_parentElemnet):
+{}
+{
+   Annotation(p_parentElemnet)
+ |
+   MemberValueArrayInitializer(p_parentElemnet)
+ |
+   ConditionalExpression(p_parentElemnet)
+}
+
+void  MemberValueArrayInitializer(Element p_parentElemnet):
+{}
+{
+  "{" MemberValue(p_parentElemnet) ( LOOKAHEAD(2) "," MemberValue(p_parentElemnet) )* [ "," ] "}"
+}
+
+
+/* Annotation Types. */
+
+void AnnotationTypeDeclaration(int modifiers, Element p_parentElement):
+{
+  Element childElement;
+  Token t;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "type");
+    childElement.setAttribute("type","annotationInterface" ); }
+  "@" "interface" t = <IDENTIFIER> { TreeUtil.createAndAppend(childElement, "name").setAttribute("name",t.image); } 
+  AnnotationTypeBody(childElement)
+}
+
+void AnnotationTypeBody(Element p_parentElement):
+{
+  Element childElement;
+}
+{
+  { childElement = TreeUtil.createAndAppend(p_parentElement, "declarations"); }
+  "{" ( AnnotationTypeMemberDeclaration(childElement) )* "}"
+}
+
+void AnnotationTypeMemberDeclaration(Element p_parentElement):
+{
+  int modifiers;
+}
+{
+ modifiers = Modifiers()
+ (
+   LOOKAHEAD(Type(p_parentElement) <IDENTIFIER> "(")
+   Type(p_parentElement) <IDENTIFIER> "(" ")" [ DefaultValue(p_parentElement) ] ";"
+  |
+   ClassOrInterfaceDeclaration(modifiers, p_parentElement)
+  |
+   EnumDeclaration(modifiers, p_parentElement)
+  |
+   AnnotationTypeDeclaration(modifiers, p_parentElement)
+  |
+   FieldDeclaration(modifiers, p_parentElement)
+ )
+ |
+   ( ";" )
+}
+
+void DefaultValue(Element p_parentElement):
+{}
+{
+  "default" MemberValue(p_parentElement)
+}

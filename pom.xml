@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.morcinek.umlgenerator</groupId>
+    <groupId>com.morcinek.uml</groupId>
     <artifactId>umlgenerator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}-${project.version}</name>
-	<modules>
+    <modules>
         <module>core</module>
     </modules>
     <dependencies>
@@ -37,6 +37,23 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
             <version>4.10</version>
+        </dependency>
+        <!-- jung dependencies to visualise graphs -->
+        <dependency>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung2</artifactId>
+            <version>2.0.1</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung-graph-impl</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung-visualization</artifactId>
+            <version>2.0.1</version>
         </dependency>
     </dependencies>
     <build>

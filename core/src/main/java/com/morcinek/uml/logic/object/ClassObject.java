@@ -1,13 +1,13 @@
 
-package pl.edu.agh.morcinek.uml.logic.object;
+package com.morcinek.uml.logic.object;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import pl.edu.agh.morcinek.uml.gui.ClassPrinter;
-import pl.edu.agh.morcinek.uml.logic.Type;
+import com.morcinek.uml.gui.ClassPrinter;
+import com.morcinek.uml.logic.Type;
 
 
 /**
