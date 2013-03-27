@@ -40,8 +40,8 @@ public class ClassFinder {
         for (File javaFile : p_dir.listFiles(javaFilter)) {
 //            JavaParser.main(new String[]{javaFile.getAbsolutePath()});
             try {
-                JavaParser.main(javaFile.getAbsolutePath());
-//                parsedElements.add(JavaParser.main(javaFile.getAbsolutePath()));
+//                JavaParser.main(javaFile.getAbsolutePath());
+                parsedElements.add(JavaParser.main(javaFile.getAbsolutePath()));
             } catch (Exception e) {
                 System.out.println("Error in file: " + javaFile.getAbsolutePath());
                 throw new RuntimeException(e);
@@ -75,6 +75,7 @@ public class ClassFinder {
         String pathName;
         if (isDeveloped) {
             pathName = "c:\\dev\\repositories\\taptera\\android-maven-build\\apps\\sunbelt\\src\\main\\java";
+//            pathName = "Test1";
         } else {
             pathName = args[0];
         }
@@ -114,9 +115,10 @@ public class ClassFinder {
             SimulationVisualization simulationVisualization = new SimulationVisualization(relations);
             simulationVisualization.showGraph();
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Error occured!!\nThere is no directory path in execution argument!");
+            System.out.println("Error occured!! There is no directory path in execution argument!");
         } catch (Exception e) {
-            System.out.println("Error occured!!\n" + e.getMessage() + "!");
+            System.out.println("Error occured!! " + e.getMessage() + "!");
+            e.printStackTrace();
         }
     }
 }

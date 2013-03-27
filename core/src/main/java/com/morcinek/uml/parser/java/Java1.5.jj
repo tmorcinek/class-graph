@@ -543,7 +543,7 @@ void TypeDeclaration(Element p_parentElement):
   (
      ClassOrInterfaceDeclaration(modifiers, p_parentElement)
    |
-     EnumDeclaration(modifiers, p_parentElement) 
+     EnumDeclaration(modifiers)
    |
      AnnotationTypeDeclaration(modifiers, p_parentElement) // { childElement.setAttribute("type","annotation" ); }
   )
@@ -601,36 +601,27 @@ void ImplementsList(boolean isInterface, Element p_parentElement):
    }
 }
 
-void EnumDeclaration(int modifiers, Element p_parentElement):
-{ 
-  Token t;
-  Element childElement;
-}
+void EnumDeclaration(int modifiers):
+{}
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "type");
-    childElement.setAttribute("modifiers",String.valueOf(modifiers));
-    childElement.setAttribute("type","enum" ); }
-  "enum" t = <IDENTIFIER> { childElement.setAttribute("name",t.image); }
-  [ ImplementsList(false, childElement) ]
-  EnumBody(childElement)
+  "enum" <IDENTIFIER>
+  [ ImplementsList(false, TreeUtil.createElement("detached")) ]
+  EnumBody()
 }
 
-void EnumBody(Element p_parentElement):
-{ 
-  Element childElement; 
-}
+void EnumBody():
+{}
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "declarations"); }
   "{"
-  EnumConstant(childElement) ( "," EnumConstant(childElement) )*
-  [ ";" ( ClassOrInterfaceBodyDeclaration(false, childElement) )* ]
+  EnumConstant() ( "," EnumConstant() )*
+  [ ";" ( ClassOrInterfaceBodyDeclaration(false, TreeUtil.createElement("detached")) )* ]
   "}"
 }
 
-void EnumConstant(Element p_parentElement):
+void EnumConstant():
 {}
 {
-   <IDENTIFIER> [ Arguments(p_parentElement) ] [ ClassOrInterfaceBody(false, p_parentElement) ]
+   <IDENTIFIER> [ Arguments(TreeUtil.createElement("detached")) ] [ ClassOrInterfaceBody(false, TreeUtil.createElement("detached")) ]
 }
 
 void TypeParameters(Element p_parentElement):
@@ -688,7 +679,7 @@ void ClassOrInterfaceBodyDeclaration(boolean isInterface, Element p_parentElemen
   (
       ClassOrInterfaceDeclaration(modifiers, p_parentElement)
     |
-      EnumDeclaration(modifiers, p_parentElement)
+      EnumDeclaration(modifiers)
     |
       LOOKAHEAD( [ TypeParameters() ] <IDENTIFIER> "(" )
       ConstructorDeclaration(modifiers, p_parentElement)
@@ -1339,7 +1330,7 @@ void BlockStatement(Element p_parentElement):
 }
 {
 (
-  LOOKAHEAD([ "final" ] Type(p_parentElement) )
+  LOOKAHEAD([ "final" ] Type(p_parentElement) <IDENTIFIER> )
   LocalVariableDeclaration(p_parentElement) ";"
 |
   Statement(p_parentElement)
@@ -1621,7 +1612,7 @@ void AnnotationTypeMemberDeclaration(Element p_parentElement):
   |
    ClassOrInterfaceDeclaration(modifiers, p_parentElement)
   |
-   EnumDeclaration(modifiers, p_parentElement)
+   EnumDeclaration(modifiers)
   |
    AnnotationTypeDeclaration(modifiers, p_parentElement)
   |
