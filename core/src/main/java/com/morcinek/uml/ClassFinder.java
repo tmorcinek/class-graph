@@ -1,4 +1,4 @@
-package com.morcinek.uml.logic;
+package com.morcinek.uml;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import com.morcinek.uml.graph.SimulationVisualization;
+import com.morcinek.uml.logic.Transform;
 import org.w3c.dom.Element;
 
 import com.morcinek.uml.gui.GuiView;
@@ -38,9 +39,7 @@ public class ClassFinder {
         List<Element> parsedElements = new LinkedList<Element>();
 
         for (File javaFile : p_dir.listFiles(javaFilter)) {
-//            JavaParser.main(new String[]{javaFile.getAbsolutePath()});
             try {
-//                JavaParser.main(javaFile.getAbsolutePath());
                 parsedElements.add(JavaParser.main(javaFile.getAbsolutePath()));
             } catch (Exception e) {
                 System.out.println("Error in file: " + javaFile.getAbsolutePath());
@@ -112,10 +111,16 @@ public class ClassFinder {
 //					guiView.showDiagramGrid();
 //				}
 //			});
-            SimulationVisualization simulationVisualization = new SimulationVisualization(relations);
-            simulationVisualization.showGraph();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    SimulationVisualization simulationVisualization = new SimulationVisualization(relations);
+                    simulationVisualization.setVisible(true);
+                }
+            });
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Error occured!! There is no directory path in execution argument!");
+            e.printStackTrace();
         } catch (Exception e) {
             System.out.println("Error occured!! " + e.getMessage() + "!");
             e.printStackTrace();

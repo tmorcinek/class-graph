@@ -452,14 +452,14 @@ TOKEN :
 
 Element CompilationUnit():
 {
-	Element element = TreeUtil.createElement("fileName");
+	Element element = ElementUtil.createElement("fileName");
 	Element imports;
 	String name;
 }
 {
-  [ name = PackageDeclaration() { TreeUtil.createAndAppend(element, "package").setAttribute("name", name); }]
-  { imports = TreeUtil.createAndAppend(element, "imports"); }
-  ( name = ImportDeclaration() { TreeUtil.createAndAppend(imports, "import").setAttribute("name", name); })*
+  [ name = PackageDeclaration() { ElementUtil.createAndAppend(element, "package").setAttribute("name", name); }]
+  { imports = ElementUtil.createAndAppend(element, "imports"); }
+  ( name = ImportDeclaration() { ElementUtil.createAndAppend(imports, "import").setAttribute("name", name); })*
   ( TypeDeclaration(element) )*
   <EOF>
   { return element; }
@@ -558,7 +558,7 @@ void ClassOrInterfaceDeclaration(int modifiers, Element p_parentElement):
 }
 {
   { 
-    childElement = TreeUtil.createAndAppend(p_parentElement, "type");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "type");
     childElement.setAttribute("modifiers", String.valueOf(modifiers)); 
   }
   ( t = "class" | t = "interface" { isInterface = true; } ) { childElement.setAttribute("type", t.image); }
@@ -576,10 +576,10 @@ void ExtendsList(boolean isInterface, Element p_parentElement):
    Element childType;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "extends");
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "extends");
   }
-   "extends" { childType = TreeUtil.createAndAppend(childElement, "type"); childType.setAttribute("dimension","0"); } ClassOrInterfaceType(childType)
-   ( "," { childType = TreeUtil.createAndAppend(childElement, "type"); } ClassOrInterfaceType(childType) { extendsMoreThanOne = true; } )*
+   "extends" { childType = ElementUtil.createAndAppend(childElement, "type"); childType.setAttribute("dimension","0"); } ClassOrInterfaceType(childType)
+   ( "," { childType = ElementUtil.createAndAppend(childElement, "type"); } ClassOrInterfaceType(childType) { extendsMoreThanOne = true; } )*
    {
       if (extendsMoreThanOne && !isInterface)
          throw new ParseException("A class cannot extend more than one other class");
@@ -592,9 +592,9 @@ void ImplementsList(boolean isInterface, Element p_parentElement):
   Element childType;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "implements"); }
-   "implements" { childType = TreeUtil.createAndAppend(childElement, "type"); } ClassOrInterfaceType(childType)
-   ( "," { childType = TreeUtil.createAndAppend(childElement, "type"); } ClassOrInterfaceType(childType) )*
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "implements"); }
+   "implements" { childType = ElementUtil.createAndAppend(childElement, "type"); } ClassOrInterfaceType(childType)
+   ( "," { childType = ElementUtil.createAndAppend(childElement, "type"); } ClassOrInterfaceType(childType) )*
    {
       if (isInterface)
          throw new ParseException("An interface cannot implement other interfaces");
@@ -605,7 +605,7 @@ void EnumDeclaration(int modifiers):
 {}
 {
   "enum" <IDENTIFIER>
-  [ ImplementsList(false, TreeUtil.createElement("detached")) ]
+  [ ImplementsList(false, ElementUtil.createElement("detached")) ]
   EnumBody()
 }
 
@@ -614,14 +614,14 @@ void EnumBody():
 {
   "{"
   EnumConstant() ( "," EnumConstant() )*
-  [ ";" ( ClassOrInterfaceBodyDeclaration(false, TreeUtil.createElement("detached")) )* ]
+  [ ";" ( ClassOrInterfaceBodyDeclaration(false, ElementUtil.createElement("detached")) )* ]
   "}"
 }
 
 void EnumConstant():
 {}
 {
-   <IDENTIFIER> [ Arguments(TreeUtil.createElement("detached")) ] [ ClassOrInterfaceBody(false, TreeUtil.createElement("detached")) ]
+   <IDENTIFIER> [ Arguments(ElementUtil.createElement("detached")) ] [ ClassOrInterfaceBody(false, ElementUtil.createElement("detached")) ]
 }
 
 void TypeParameters(Element p_parentElement):
@@ -629,7 +629,7 @@ void TypeParameters(Element p_parentElement):
   Element childElement;
 }
 {
-   { childElement = TreeUtil.createAndAppend(p_parentElement, "typeParameters"); }
+   { childElement = ElementUtil.createAndAppend(p_parentElement, "typeParameters"); }
    "<" TypeParameter(childElement) ( "," TypeParameter(childElement) )* ">"
 }
 
@@ -639,7 +639,7 @@ void TypeParameter(Element p_parentElement):
   Element childElement;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "typeParameter"); }
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "typeParameter"); }
   t = <IDENTIFIER> { childElement.setAttribute("name",t.image); } 
   [ TypeBound(childElement) ]
 }
@@ -656,7 +656,7 @@ void ClassOrInterfaceBody(boolean isInterface, Element p_parentElement):
   Element childElement;
 }
 {
-	{ childElement = TreeUtil.createAndAppend(p_parentElement, "declarations"); }
+	{ childElement = ElementUtil.createAndAppend(p_parentElement, "declarations"); }
   "{" ( ClassOrInterfaceBodyDeclaration(isInterface, childElement) )* "}"
 }
 
@@ -700,7 +700,7 @@ void FieldDeclaration(int modifiers, Element p_parentElement):
 }
 {
   // Modifiers are already matched in the caller
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "field"); 
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "field"); 
     childElement.setAttribute("modifiers",String.valueOf(modifiers)); }
   Type(childElement) VariableDeclarator(childElement) ( "," VariableDeclarator(childElement) )* ";"
 }
@@ -719,7 +719,7 @@ void VariableDeclaratorId(Element p_parentElement):
 }
 {
   t = <IDENTIFIER> ( "[" "]" { dimension++; } )* 
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "declarator");
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "declarator");
     childElement.setAttribute("name",t.image); 
     childElement.setAttribute("dimension",String.valueOf(dimension));
   } 
@@ -738,7 +738,7 @@ void ArrayInitializer(Element p_parentElement):
   Element childElement;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "array"); }
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "array"); }
   "{" [ VariableInitializer(childElement) ( LOOKAHEAD(2) "," VariableInitializer(childElement) )* ] [ "," ] "}"
 }
 
@@ -748,13 +748,13 @@ void MethodDeclaration(int modifiers, Element p_parentElement):
 }
 {
   // Modifiers already matched in the caller!
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "method"); 
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "method"); 
     childElement.setAttribute("modifiers",String.valueOf(modifiers)); }
   [ TypeParameters(childElement) ]
   ResultType(childElement)
   MethodDeclarator(childElement) [ "throws" NameList(childElement) ]
   
-  { childElement = TreeUtil.createAndAppend(childElement, "block"); } 
+  { childElement = ElementUtil.createAndAppend(childElement, "block"); } 
   ( Block(childElement) | ";" )
 }
 
@@ -779,7 +779,7 @@ void FormalParameter(Element p_parentElement):
   Element childElement;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "parameter"); }
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "parameter"); }
   [ "final" ] Type(childElement) [ "..." ] VariableDeclaratorId(childElement)
 }
 
@@ -790,9 +790,9 @@ void ConstructorDeclaration(int modifiers,Element p_parentElement):
   Element typeElement;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "constructor"); 
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "constructor"); 
     childElement.setAttribute("modifiers",String.valueOf(modifiers)); 
-    typeElement = TreeUtil.createAndAppend(childElement, "type");
+    typeElement = ElementUtil.createAndAppend(childElement, "type");
     typeElement.setAttribute("name","constructor");
   }
   [ TypeParameters(childElement) ]
@@ -801,7 +801,7 @@ void ConstructorDeclaration(int modifiers,Element p_parentElement):
   FormalParameters(childElement) [ "throws" NameList(childElement) ]
   "{"
     [ LOOKAHEAD(ExplicitConstructorInvocation(childElement)) ExplicitConstructorInvocation(childElement) ]
-    { childElement = TreeUtil.createAndAppend(childElement, "block"); }
+    { childElement = ElementUtil.createAndAppend(childElement, "block"); }
     ( BlockStatement(childElement) )*
   "}"
 }
@@ -820,8 +820,8 @@ void Initializer(Element p_parentElement):
   Element childElement;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "initializer"); }
-  { childElement = TreeUtil.createAndAppend(childElement, "block"); }
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "initializer"); }
+  { childElement = ElementUtil.createAndAppend(childElement, "block"); }
   [ "static" ] Block(childElement)
 }
 
@@ -837,7 +837,7 @@ void Type(Element p_parentElement):
 {
    LOOKAHEAD(2) ReferenceType(p_parentElement) { }
  |
-   { childElement = TreeUtil.createAndAppend(p_parentElement,"type"); }
+   { childElement = ElementUtil.createAndAppend(p_parentElement,"type"); }
    PrimitiveType(childElement)
 }
 
@@ -847,11 +847,11 @@ void ReferenceType(Element p_parentElement):
   int dimension = 0;
 }
 {
-   { childElement = TreeUtil.createAndAppend(p_parentElement,"type"); }
+   { childElement = ElementUtil.createAndAppend(p_parentElement,"type"); }
    PrimitiveType(childElement) ( LOOKAHEAD(2) "[" "]" { dimension++; } )+
    { childElement.setAttribute("dimension",String.valueOf(dimension)); }
   |
-   { childElement = TreeUtil.createAndAppend(p_parentElement,"type"); }
+   { childElement = ElementUtil.createAndAppend(p_parentElement,"type"); }
    ( ClassOrInterfaceType(childElement) ) ( LOOKAHEAD(2) "[" "]" { dimension++; } )*
    { childElement.setAttribute("dimension",String.valueOf(dimension)); }
 }
@@ -863,7 +863,7 @@ void ClassOrInterfaceType(Element p_parentElement):
   Element childElement;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "classType"); }
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "classType"); }
   t = <IDENTIFIER> { name = t.image; }  
   [ LOOKAHEAD(2) TypeArguments(childElement) ]
   
@@ -880,7 +880,7 @@ void TypeArguments(Element p_parentElement):
   Element childElement;
 }
 {
-   { childElement = TreeUtil.createAndAppend(p_parentElement,"arguments"); }
+   { childElement = ElementUtil.createAndAppend(p_parentElement,"arguments"); }
    "<" TypeArgument(childElement) 
    ( "," TypeArgument(childElement) )* ">"
 }
@@ -959,8 +959,8 @@ void NameList(Element p_parentElement):
   String name;
 }
 {
-  name = Name() { TreeUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name); }
-  ( "," name = Name() { TreeUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name); } )*
+  name = Name() { ElementUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name); }
+  ( "," name = Name() { ElementUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name); } )*
 }
 
 
@@ -1259,7 +1259,7 @@ void ArrayDimsAndInits(Element p_parentElement):
 {
   LOOKAHEAD(2)
   ( LOOKAHEAD(2) "["
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "array"); } 
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "array"); } 
   Expression(childElement) "]" )+ ( LOOKAHEAD(2) "[" "]" )*
 |
   ( "[" "]" )+ ArrayInitializer(p_parentElement)
@@ -1345,7 +1345,7 @@ void LocalVariableDeclaration(Element p_parentElement):
   Element childElement;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "localVariable"); }
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "localVariable"); }
   [ "final" ] Type(childElement) VariableDeclarator(childElement) ( "," VariableDeclarator(childElement) )*
 }
 
@@ -1585,9 +1585,9 @@ void AnnotationTypeDeclaration(int modifiers, Element p_parentElement):
   Token t;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "type");
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "type");
     childElement.setAttribute("type","annotationInterface" ); }
-  "@" "interface" t = <IDENTIFIER> { TreeUtil.createAndAppend(childElement, "name").setAttribute("name",t.image); } 
+  "@" "interface" t = <IDENTIFIER> { ElementUtil.createAndAppend(childElement, "name").setAttribute("name",t.image); } 
   AnnotationTypeBody(childElement)
 }
 
@@ -1596,7 +1596,7 @@ void AnnotationTypeBody(Element p_parentElement):
   Element childElement;
 }
 {
-  { childElement = TreeUtil.createAndAppend(p_parentElement, "declarations"); }
+  { childElement = ElementUtil.createAndAppend(p_parentElement, "declarations"); }
   "{" ( AnnotationTypeMemberDeclaration(childElement) )* "}"
 }
 

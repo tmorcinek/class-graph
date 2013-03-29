@@ -137,18 +137,18 @@ public class JavaParser implements JavaParserConstants {
  * Program structuring syntax follows.
  */
   final public Element CompilationUnit() throws ParseException {
-        Element element = TreeUtil.createElement("fileName");
+        Element element = ElementUtil.createElement("fileName");
         Element imports;
         String name;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PACKAGE:
       name = PackageDeclaration();
-                                  TreeUtil.createAndAppend(element, "package").setAttribute("name", name);
+                                  ElementUtil.createAndAppend(element, "package").setAttribute("name", name);
       break;
     default:
       ;
     }
-    imports = TreeUtil.createAndAppend(element, "imports");
+    imports = ElementUtil.createAndAppend(element, "imports");
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -159,7 +159,7 @@ public class JavaParser implements JavaParserConstants {
         break label_1;
       }
       name = ImportDeclaration();
-                                 TreeUtil.createAndAppend(imports, "import").setAttribute("name", name);
+                                 ElementUtil.createAndAppend(imports, "import").setAttribute("name", name);
     }
     label_2:
     while (true) {
@@ -351,7 +351,7 @@ public class JavaParser implements JavaParserConstants {
    boolean isInterface = false;
    Token t;
    Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "type");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "type");
     childElement.setAttribute("modifiers", String.valueOf(modifiers));
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CLASS:
@@ -396,9 +396,9 @@ public class JavaParser implements JavaParserConstants {
    boolean extendsMoreThanOne = false;
    Element childElement;
    Element childType;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "extends");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "extends");
     jj_consume_token(EXTENDS);
-               childType = TreeUtil.createAndAppend(childElement, "type"); childType.setAttribute("dimension","0");
+               childType = ElementUtil.createAndAppend(childElement, "type"); childType.setAttribute("dimension","0");
     ClassOrInterfaceType(childType);
     label_4:
     while (true) {
@@ -410,7 +410,7 @@ public class JavaParser implements JavaParserConstants {
         break label_4;
       }
       jj_consume_token(COMMA);
-           childType = TreeUtil.createAndAppend(childElement, "type");
+           childType = ElementUtil.createAndAppend(childElement, "type");
       ClassOrInterfaceType(childType);
                                                                                                            extendsMoreThanOne = true;
     }
@@ -421,9 +421,9 @@ public class JavaParser implements JavaParserConstants {
   final public void ImplementsList(boolean isInterface, Element p_parentElement) throws ParseException {
   Element childElement;
   Element childType;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "implements");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "implements");
     jj_consume_token(IMPLEMENTS);
-                  childType = TreeUtil.createAndAppend(childElement, "type");
+                  childType = ElementUtil.createAndAppend(childElement, "type");
     ClassOrInterfaceType(childType);
     label_5:
     while (true) {
@@ -435,7 +435,7 @@ public class JavaParser implements JavaParserConstants {
         break label_5;
       }
       jj_consume_token(COMMA);
-           childType = TreeUtil.createAndAppend(childElement, "type");
+           childType = ElementUtil.createAndAppend(childElement, "type");
       ClassOrInterfaceType(childType);
     }
       if (isInterface)
@@ -447,7 +447,7 @@ public class JavaParser implements JavaParserConstants {
     jj_consume_token(IDENTIFIER);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case IMPLEMENTS:
-      ImplementsList(false, TreeUtil.createElement("detached"));
+      ImplementsList(false, ElementUtil.createElement("detached"));
       break;
     default:
       ;
@@ -509,7 +509,7 @@ public class JavaParser implements JavaParserConstants {
         default:
           break label_7;
         }
-        ClassOrInterfaceBodyDeclaration(false, TreeUtil.createElement("detached"));
+        ClassOrInterfaceBodyDeclaration(false, ElementUtil.createElement("detached"));
       }
       break;
     default:
@@ -522,14 +522,14 @@ public class JavaParser implements JavaParserConstants {
     jj_consume_token(IDENTIFIER);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LPAREN:
-      Arguments(TreeUtil.createElement("detached"));
+      Arguments(ElementUtil.createElement("detached"));
       break;
     default:
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LBRACE:
-      ClassOrInterfaceBody(false, TreeUtil.createElement("detached"));
+      ClassOrInterfaceBody(false, ElementUtil.createElement("detached"));
       break;
     default:
       ;
@@ -538,7 +538,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void TypeParameters(Element p_parentElement) throws ParseException {
   Element childElement;
-     childElement = TreeUtil.createAndAppend(p_parentElement, "typeParameters");
+     childElement = ElementUtil.createAndAppend(p_parentElement, "typeParameters");
     jj_consume_token(LT);
     TypeParameter(childElement);
     label_8:
@@ -559,7 +559,7 @@ public class JavaParser implements JavaParserConstants {
   final public void TypeParameter(Element p_parentElement) throws ParseException {
   Token t;
   Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "typeParameter");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "typeParameter");
     t = jj_consume_token(IDENTIFIER);
                      childElement.setAttribute("name",t.image);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -590,7 +590,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void ClassOrInterfaceBody(boolean isInterface, Element p_parentElement) throws ParseException {
   Element childElement;
-          childElement = TreeUtil.createAndAppend(p_parentElement, "declarations");
+          childElement = ElementUtil.createAndAppend(p_parentElement, "declarations");
     jj_consume_token(LBRACE);
     label_10:
     while (true) {
@@ -716,7 +716,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void FieldDeclaration(int modifiers, Element p_parentElement) throws ParseException {
   Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "field");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "field");
     childElement.setAttribute("modifiers",String.valueOf(modifiers));
     Type(childElement);
     VariableDeclarator(childElement);
@@ -765,7 +765,7 @@ public class JavaParser implements JavaParserConstants {
       jj_consume_token(RBRACKET);
                                dimension++;
     }
-    childElement = TreeUtil.createAndAppend(p_parentElement, "declarator");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "declarator");
     childElement.setAttribute("name",t.image);
     childElement.setAttribute("dimension",String.valueOf(dimension));
   }
@@ -812,7 +812,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void ArrayInitializer(Element p_parentElement) throws ParseException {
   Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "array");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "array");
     jj_consume_token(LBRACE);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BOOLEAN:
@@ -870,7 +870,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void MethodDeclaration(int modifiers, Element p_parentElement) throws ParseException {
   Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "method");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "method");
     childElement.setAttribute("modifiers",String.valueOf(modifiers));
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LT:
@@ -889,7 +889,7 @@ public class JavaParser implements JavaParserConstants {
     default:
       ;
     }
-    childElement = TreeUtil.createAndAppend(childElement, "block");
+    childElement = ElementUtil.createAndAppend(childElement, "block");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LBRACE:
       Block(childElement);
@@ -959,7 +959,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void FormalParameter(Element p_parentElement) throws ParseException {
   Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "parameter");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "parameter");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case FINAL:
       jj_consume_token(FINAL);
@@ -982,9 +982,9 @@ public class JavaParser implements JavaParserConstants {
   Token t;
   Element childElement;
   Element typeElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "constructor");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "constructor");
     childElement.setAttribute("modifiers",String.valueOf(modifiers));
-    typeElement = TreeUtil.createAndAppend(childElement, "type");
+    typeElement = ElementUtil.createAndAppend(childElement, "type");
     typeElement.setAttribute("name","constructor");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LT:
@@ -1011,7 +1011,7 @@ public class JavaParser implements JavaParserConstants {
     } else {
       ;
     }
-      childElement = TreeUtil.createAndAppend(childElement, "block");
+      childElement = ElementUtil.createAndAppend(childElement, "block");
     label_16:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1112,8 +1112,8 @@ public class JavaParser implements JavaParserConstants {
 
   final public void Initializer(Element p_parentElement) throws ParseException {
   Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "initializer");
-    childElement = TreeUtil.createAndAppend(childElement, "block");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "initializer");
+    childElement = ElementUtil.createAndAppend(childElement, "block");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STATIC:
       jj_consume_token(STATIC);
@@ -1142,7 +1142,7 @@ public class JavaParser implements JavaParserConstants {
       case INT:
       case LONG:
       case SHORT:
-     childElement = TreeUtil.createAndAppend(p_parentElement,"type");
+     childElement = ElementUtil.createAndAppend(p_parentElement, "type");
         PrimitiveType(childElement);
         break;
       default:
@@ -1164,7 +1164,7 @@ public class JavaParser implements JavaParserConstants {
     case INT:
     case LONG:
     case SHORT:
-     childElement = TreeUtil.createAndAppend(p_parentElement,"type");
+     childElement = ElementUtil.createAndAppend(p_parentElement, "type");
       PrimitiveType(childElement);
       label_17:
       while (true) {
@@ -1180,7 +1180,7 @@ public class JavaParser implements JavaParserConstants {
      childElement.setAttribute("dimension",String.valueOf(dimension));
       break;
     case IDENTIFIER:
-     childElement = TreeUtil.createAndAppend(p_parentElement,"type");
+     childElement = ElementUtil.createAndAppend(p_parentElement, "type");
       ClassOrInterfaceType(childElement);
       label_18:
       while (true) {
@@ -1205,7 +1205,7 @@ public class JavaParser implements JavaParserConstants {
   Token t;
   String name;
   Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "classType");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "classType");
     t = jj_consume_token(IDENTIFIER);
                      name = t.image;
     if (jj_2_12(2)) {
@@ -1234,7 +1234,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void TypeArguments(Element p_parentElement) throws ParseException {
   Element childElement;
-     childElement = TreeUtil.createAndAppend(p_parentElement,"arguments");
+     childElement = ElementUtil.createAndAppend(p_parentElement, "arguments");
     jj_consume_token(LT);
     TypeArgument(childElement);
     label_20:
@@ -1379,7 +1379,7 @@ public class JavaParser implements JavaParserConstants {
   final public void NameList(Element p_parentElement) throws ParseException {
   String name;
     name = Name();
-                  TreeUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name);
+                  ElementUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name);
     label_22:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1391,7 +1391,7 @@ public class JavaParser implements JavaParserConstants {
       }
       jj_consume_token(COMMA);
       name = Name();
-                        TreeUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name);
+                        ElementUtil.createAndAppend(p_parentElement, "throw").setAttribute("name",name);
     }
   }
 
@@ -2181,7 +2181,7 @@ public class JavaParser implements JavaParserConstants {
       label_35:
       while (true) {
         jj_consume_token(LBRACKET);
-    childElement = TreeUtil.createAndAppend(p_parentElement, "array");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "array");
         Expression(childElement);
         jj_consume_token(RBRACKET);
         if (jj_2_30(2)) {
@@ -2440,7 +2440,7 @@ public class JavaParser implements JavaParserConstants {
 
   final public void LocalVariableDeclaration(Element p_parentElement) throws ParseException {
   Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "localVariable");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "localVariable");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case FINAL:
       jj_consume_token(FINAL);
@@ -3137,18 +3137,18 @@ public class JavaParser implements JavaParserConstants {
   final public void AnnotationTypeDeclaration(int modifiers, Element p_parentElement) throws ParseException {
   Element childElement;
   Token t;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "type");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "type");
     childElement.setAttribute("type","annotationInterface" );
     jj_consume_token(AT);
     jj_consume_token(INTERFACE);
     t = jj_consume_token(IDENTIFIER);
-                                     TreeUtil.createAndAppend(childElement, "name").setAttribute("name",t.image);
+                                     ElementUtil.createAndAppend(childElement, "name").setAttribute("name",t.image);
     AnnotationTypeBody(childElement);
   }
 
   final public void AnnotationTypeBody(Element p_parentElement) throws ParseException {
   Element childElement;
-    childElement = TreeUtil.createAndAppend(p_parentElement, "declarations");
+    childElement = ElementUtil.createAndAppend(p_parentElement, "declarations");
     jj_consume_token(LBRACE);
     label_46:
     while (true) {

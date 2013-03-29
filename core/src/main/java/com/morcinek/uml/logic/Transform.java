@@ -5,13 +5,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.morcinek.uml.util.ElementUtil;
 import org.w3c.dom.Element;
 
 import com.morcinek.uml.logic.object.ClassObject;
 import com.morcinek.uml.logic.object.FieldObject;
 import com.morcinek.uml.logic.object.MethodObject;
 import com.morcinek.uml.parser.java.JavaParser.ModifierSet;
-import com.morcinek.uml.util.TreeUtil;
 
 /**
  * 
@@ -92,7 +92,7 @@ public class Transform {
 	
 	public void addFileElementToImports(Element p_element){
 		
-		List<Element> types = TreeUtil.getChildElementsByName(p_element, "type");
+		List<Element> types = ElementUtil.getChildElementsByName(p_element, "type");
 		
 		// setting package
 		this.currentPackage = getPackageName(p_element);
@@ -119,7 +119,7 @@ public class Transform {
 			}
 		}
 		
-		List<Element> types = TreeUtil.getChildElementsByName(p_element, "type");
+		List<Element> types = ElementUtil.getChildElementsByName(p_element, "type");
 		
 		// processing types
 		for(Element type: types){
@@ -141,41 +141,41 @@ public class Transform {
 		processModifiers(p_element, newClass);
 		
 		// set extends 
-		for(Element extend: TreeUtil.getChildElementsByName(p_element, "extends")){
+		for(Element extend: ElementUtil.getChildElementsByName(p_element, "extends")){
 			// getting type element
-			for(Element type: TreeUtil.getChildElementsByName(extend, "type")){
+			for(Element type: ElementUtil.getChildElementsByName(extend, "type")){
 				Type newType = createType(type);
 				newClass.addExtends(newType);
 			}
 		}
 		
 		// sets implements
-		for(Element implement: TreeUtil.getChildElementsByName(p_element, "implements")){
-			for(Element type: TreeUtil.getChildElementsByName(implement, "type")){
+		for(Element implement: ElementUtil.getChildElementsByName(p_element, "implements")){
+			for(Element type: ElementUtil.getChildElementsByName(implement, "type")){
 				Type newType = createType(type);
 				newClass.addImplements(newType);
 			}			
 		}
 		
 		// sets declarations
-		Element declarations = TreeUtil.getChildElementsByName(p_element, "declarations").get(0);
+		Element declarations = ElementUtil.getChildElementsByName(p_element, "declarations").get(0);
 		// fields 
-		for(Element field : TreeUtil.getChildElementsByName(declarations, "field")){
+		for(Element field : ElementUtil.getChildElementsByName(declarations, "field")){
 			processField(field, newClass);
 		}
 		
 		// methods
-		for(Element method : TreeUtil.getChildElementsByName(declarations, "method")){
+		for(Element method : ElementUtil.getChildElementsByName(declarations, "method")){
 			processMethod(method, newClass);
 		}
 		
 		// constructors
-		for(Element constructor : TreeUtil.getChildElementsByName(declarations, "constructor")){
+		for(Element constructor : ElementUtil.getChildElementsByName(declarations, "constructor")){
 			processMethod(constructor, newClass);
 		}
 		
 		// process class inside
-		for(Element type : TreeUtil.getChildElementsByName(declarations, "type")){
+		for(Element type : ElementUtil.getChildElementsByName(declarations, "type")){
 			processType(type, newClass);
 		}
 	}
@@ -200,13 +200,13 @@ public class Transform {
 		// dodajemy do compozitoin
 
 		// get type
-		Type type = createType(TreeUtil.getFirstChildElementByName(p_field, "type"));
+		Type type = createType(ElementUtil.getFirstChildElementByName(p_field, "type"));
 		
 		// get modifiers
 		String modifiers = p_field.getAttribute("modifiers");
 		
 		// set declarations
-		for(Element declarator: TreeUtil.getChildElementsByName(p_field, "declarator")){
+		for(Element declarator: ElementUtil.getChildElementsByName(p_field, "declarator")){
 			String name = declarator.getAttribute("name");
 			Integer dimension = Integer.valueOf(declarator.getAttribute("dimension"));
 			// seting filed object
@@ -225,7 +225,7 @@ public class Transform {
 		
 		// get type
 		Type type;
-		Element resultType = TreeUtil.getFirstChildElementByName(p_method, "type");
+		Element resultType = ElementUtil.getFirstChildElementByName(p_method, "type");
 		if(resultType != null){
 			type = createType(resultType);
 		} else {
@@ -240,12 +240,12 @@ public class Transform {
 		methodObject.setName(p_method.getAttribute("name"));
 		
 		// get parameters
-		for(Element parameter: TreeUtil.getChildElementsByName(p_method, "parameter")){
+		for(Element parameter: ElementUtil.getChildElementsByName(p_method, "parameter")){
 			// get parameter type
-			Type paramType = createType(TreeUtil.getFirstChildElementByName(parameter, "type"));
+			Type paramType = createType(ElementUtil.getFirstChildElementByName(parameter, "type"));
 			
 			// get declarator
-			Element declarator = TreeUtil.getFirstChildElementByName(parameter, "declarator");
+			Element declarator = ElementUtil.getFirstChildElementByName(parameter, "declarator");
 			String name = declarator.getAttribute("name");
 			// dimension added to type
 			int dimension = Integer.valueOf(declarator.getAttribute("dimension"));
@@ -256,7 +256,7 @@ public class Transform {
 		}
 		
 		// get throw's --adding as variable
-		for(Element throwClass : TreeUtil.getChildElementsByName(p_method, "throw")){
+		for(Element throwClass : ElementUtil.getChildElementsByName(p_method, "throw")){
 			// creating type
 			Type throwType = new Type(throwClass.getAttribute("name"));
 			String fullTypeName = this.currentClassNameImportNameMap.get(throwType);
@@ -268,7 +268,7 @@ public class Transform {
 		}
 		
 		// get block variables
-		processBlock(TreeUtil.getFirstChildElementByName(p_method,"block"), methodObject);
+		processBlock(ElementUtil.getFirstChildElementByName(p_method, "block"), methodObject);
 		
 		p_classObject.addDeclaration(methodObject);
 	}
@@ -281,23 +281,23 @@ public class Transform {
 	private void processBlock(Element p_block, MethodObject p_methodObject){
 		
 		// get types from type
-		for(Element type: TreeUtil.getChildElementsByName(p_block, "type")){
+		for(Element type: ElementUtil.getChildElementsByName(p_block, "type")){
 			Type newType = createType(type);
 			p_methodObject.addVariable(newType);
 		}
 		
 		
 		// get types from localVariable's
-		for(Element localVariable: TreeUtil.getChildElementsByName(p_block, "localVariable")){
+		for(Element localVariable: ElementUtil.getChildElementsByName(p_block, "localVariable")){
 			// type
-			Element type = TreeUtil.getFirstChildElementByName(localVariable, "type");
+			Element type = ElementUtil.getFirstChildElementByName(localVariable, "type");
 			Type newType = createType(type);
 			p_methodObject.addVariable(newType);
 			
 			// get classType's
-			for(Element classType: TreeUtil.getChildElementsByName(localVariable, "classType")){
+			for(Element classType: ElementUtil.getChildElementsByName(localVariable, "classType")){
 				// decorating 'classType' with 'type'
-				type = TreeUtil.createElement(classType,"type");
+				type = ElementUtil.createElement(classType, "type");
 				type.appendChild(classType.cloneNode(true));
 				
 				// creating new type
@@ -307,8 +307,8 @@ public class Transform {
 		}
 		
 		// get classType
-		for(Element classType: TreeUtil.getChildElementsByName(p_block, "classType")){
-			Element type = TreeUtil.createElement(classType,"type");
+		for(Element classType: ElementUtil.getChildElementsByName(p_block, "classType")){
+			Element type = ElementUtil.createElement(classType, "type");
 			type.appendChild(classType.cloneNode(true));
 			Type newType = createType(type);
 			p_methodObject.addVariable(newType);
@@ -337,14 +337,14 @@ public class Transform {
 			
 		} else {
 			// reference type
-			Element clasType = TreeUtil.getFirstChildElementByName(p_type, "classType");
+			Element clasType = ElementUtil.getFirstChildElementByName(p_type, "classType");
 			
 			typeName = clasType.getAttribute("name");
 			type.setName(typeName);
 			
-			Element arguments = TreeUtil.getFirstChildElementByName(clasType, "arguments");
+			Element arguments = ElementUtil.getFirstChildElementByName(clasType, "arguments");
 			if(arguments != null){
-				for(Element childType: TreeUtil.getChildElementsByName(arguments, "type")){
+				for(Element childType: ElementUtil.getChildElementsByName(arguments, "type")){
 					type.addType(createType(childType));
 				}
 			}
@@ -363,7 +363,7 @@ public class Transform {
 	 * @return package name or empty string if no package is defined
 	 */
 	private static String getPackageName(Element p_element){
-		List<Element> packages = TreeUtil.getChildElementsByName(p_element,"package");
+		List<Element> packages = ElementUtil.getChildElementsByName(p_element, "package");
 		String name = "";
 		if(!packages.isEmpty()){
 			name = packages.get(0).getAttribute("name");
@@ -373,8 +373,8 @@ public class Transform {
 	
 	private static List<String> getImportsNameList(Element p_element){
 		List<String> nameList = new LinkedList<String>();
-		Element importsElement = TreeUtil.getChildElementsByName(p_element,"imports").get(0);
-		for(Element importElement: TreeUtil.getChildElementsByName(importsElement, "import")){
+		Element importsElement = ElementUtil.getChildElementsByName(p_element, "imports").get(0);
+		for(Element importElement: ElementUtil.getChildElementsByName(importsElement, "import")){
 			nameList.add(importElement.getAttribute("name"));
 		}
 		return nameList;
