@@ -8,6 +8,7 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
+import org.apache.commons.collections15.Transformer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +42,7 @@ public class SimulationVisualization extends JFrame implements ActionListener {
         visualizationViewer = new VisualizationViewer<String, Integer>(layout);
         visualizationViewer.setPreferredSize(new Dimension(1024, 640));
 
-        visualizationViewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+        visualizationViewer.getRenderContext().setVertexLabelTransformer(new VertexTransformer());
         visualizationViewer.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
         visualizationViewer.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
         DefaultModalGraphMouse gm = new DefaultModalGraphMouse();
@@ -131,6 +132,15 @@ public class SimulationVisualization extends JFrame implements ActionListener {
             e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (NoSuchMethodException e1) {
             e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    private class VertexTransformer implements Transformer<String, String> {
+
+        @Override
+        public String transform(String s) {
+            String[] nameParts = s.split("\\.");
+            return nameParts[nameParts.length - 1];
         }
     }
 
