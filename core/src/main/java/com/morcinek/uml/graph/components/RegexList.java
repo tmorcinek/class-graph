@@ -1,4 +1,4 @@
-package com.morcinek.uml.graph;
+package com.morcinek.uml.graph.components;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -33,6 +33,10 @@ public class RegexList extends JPanel implements ListSelectionListener {
 
     public RegexList(ActionListener actionListener) {
         super(new BorderLayout());
+        setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Regex exclude list"),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
         this.actionListener = actionListener;
 
         listModel = new DefaultListModel<String>();
@@ -42,7 +46,6 @@ public class RegexList extends JPanel implements ListSelectionListener {
         list.setSelectedIndex(0);
         list.addListSelectionListener(this);
         list.setVisibleRowCount(3);
-        JScrollPane listScrollPane = new JScrollPane(list);
 
         JButton hireButton = new JButton(hireString);
         HireListener hireListener = new HireListener(hireButton);
@@ -53,6 +56,7 @@ public class RegexList extends JPanel implements ListSelectionListener {
         fireButton = new JButton(fireString);
         fireButton.setActionCommand(fireString);
         fireButton.addActionListener(new FireListener());
+        fireButton.setEnabled(false);
 
         employeeName = new JTextField(10);
         employeeName.addActionListener(hireListener);
@@ -60,17 +64,15 @@ public class RegexList extends JPanel implements ListSelectionListener {
 
         //Create a panel that uses BoxLayout.
         JPanel buttonPane = new JPanel();
-        buttonPane.setLayout(new BoxLayout(buttonPane,
-                BoxLayout.LINE_AXIS));
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
         buttonPane.add(fireButton);
         buttonPane.add(Box.createHorizontalStrut(5));
-        buttonPane.add(new JSeparator(SwingConstants.VERTICAL));
-        buttonPane.add(Box.createHorizontalStrut(5));
         buttonPane.add(employeeName);
+        buttonPane.add(Box.createHorizontalStrut(5));
         buttonPane.add(hireButton);
-        buttonPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        buttonPane.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 
-        add(listScrollPane, BorderLayout.CENTER);
+        add(new JScrollPane(list), BorderLayout.CENTER);
         add(buttonPane, BorderLayout.PAGE_END);
     }
 

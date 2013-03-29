@@ -1,5 +1,6 @@
 package com.morcinek.uml.graph;
 
+import com.morcinek.uml.graph.components.RegexList;
 import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
@@ -7,7 +8,6 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
-import sun.misc.GC;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,10 +36,10 @@ public class SimulationVisualization extends JFrame implements ActionListener {
 
     private void initialize() {
         Layout<String, Integer> layout = new FRLayout(new SimulationGraph<Integer>());
-        layout.setSize(new Dimension(400, 400));
+        layout.setSize(new Dimension(700, 500));
 
         visualizationViewer = new VisualizationViewer<String, Integer>(layout);
-        visualizationViewer.setPreferredSize(new Dimension(500, 500));
+        visualizationViewer.setPreferredSize(new Dimension(1024, 640));
 
         visualizationViewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
         visualizationViewer.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
@@ -88,6 +88,10 @@ public class SimulationVisualization extends JFrame implements ActionListener {
 
     private JPanel getTopLayout() {
         JPanel panel = new JPanel(new FlowLayout());
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Editor"),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
 
         final JComboBox petList = new JComboBox();
         panel.add(petList);
@@ -105,9 +109,7 @@ public class SimulationVisualization extends JFrame implements ActionListener {
                 visualizationViewer.repaint();
             }
         });
-        JScrollPane listScrollPane = new JScrollPane(regexList);
-        panel.add(listScrollPane);
-
+        panel.add(regexList);
         return panel;
     }
 
