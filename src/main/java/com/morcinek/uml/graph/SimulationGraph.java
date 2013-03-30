@@ -3,9 +3,6 @@ package com.morcinek.uml.graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SimulationGraph<E extends Number> extends SparseMultigraph<String, QuantityEdge<E>> {
 
     public void addQuantityEdge(String fromVertex, String toVertex, E edge) {
