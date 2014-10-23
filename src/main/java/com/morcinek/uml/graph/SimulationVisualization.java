@@ -18,16 +18,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SimulationVisualization extends JFrame implements ActionListener {
 
-    private final HashMap<String, HashMap<String, Integer>> relations;
+    private final Map<String, HashMap<String, Integer>> relations;
 
     private RegexList regexList;
 
     private VisualizationViewer<String, Integer> visualizationViewer;
 
-    public SimulationVisualization(HashMap<String, HashMap<String, Integer>> relations) {
+    public SimulationVisualization(Map<String, HashMap<String, Integer>> relations) {
         super("title");
         this.relations = relations;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
