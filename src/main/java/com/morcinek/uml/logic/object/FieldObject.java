@@ -16,8 +16,8 @@ public class FieldObject extends DeclarationObject {
         this.dimension = dimension;
     }
 
-    public void plus(int p_dimension) {
-        dimension += p_dimension;
+    public void plus(int dimension) {
+        this.dimension += dimension;
     }
 
     public int getDimension() {
@@ -28,8 +28,8 @@ public class FieldObject extends DeclarationObject {
         return type;
     }
 
-    public void setType(Type p_type) {
-        type = p_type;
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public Map<String, Integer> globalTypes() {
@@ -55,11 +55,10 @@ public class FieldObject extends DeclarationObject {
      * @return <code>2</code> if field is object and <code>4</code> if filed is array.
      */
     private int getDimensionValue() {
-        int dim = 2;
         if (type.getDimension() + dimension > 0) {
-            dim = 4;
+            return 4;
         }
-        return dim;
+        return 2;
     }
 
     public String toString() {
