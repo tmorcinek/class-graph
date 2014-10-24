@@ -32,6 +32,12 @@ public class RelationsProvider {
     };
 
 
+    public Map<String, HashMap<String, Integer>> provideRelations(String pathName){
+        Transform transform = new Transform();
+        parseFiles(pathName, transform);
+        return transform.getClassRelations();
+    }
+
     private void findFiles(File p_dir, Transform p_transform) {
 
         List<Element> parsedElements = new LinkedList<Element>();
@@ -66,19 +72,5 @@ public class RelationsProvider {
             throw new IllegalArgumentException(dir.getAbsolutePath() + " is not a directory");
 
         findFiles(dir, p_transform);
-    }
-
-    public Map<String, HashMap<String, Integer>> provideRelations(String pathName){
-        Transform transform = new Transform();
-        parseFiles(pathName, transform);
-        final Map<String, HashMap<String, Integer>> relations = transform.getClassRelations();
-        for (String mainName : relations.keySet()) {
-            HashMap<String, Integer> map = relations.get(mainName);
-            System.out.println(mainName);
-            for (String name : map.keySet()) {
-                System.out.println(" > " + name + " : " + map.get(name));
-            }
-        }
-        return relations;
     }
 }
