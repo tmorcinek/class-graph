@@ -1,70 +1,74 @@
 package com.morcinek.uml.logic.object;
 
-import java.util.Map;
-
 import com.morcinek.uml.parser.java.JavaParser.ModifierSet;
 
-public abstract class DeclarationObject{
-	
-	protected String name;
-	
-	protected String range;
-	
-	protected String modifiers = "";
+import java.util.Map;
 
-	public String getName() {
-		return name;
-	}
+public abstract class DeclarationObject {
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getRange() {
-		return range;
-	}
-	
-	public void setRange(String p_modifiers){
-		int modifiers = Integer.valueOf(p_modifiers);
-		// getModifiers
-		ModifierSet m = new ModifierSet();
-		
-		// set range
-		if(m.isPublic(modifiers)){
-			this.range = "+";
-		} else if(m.isPrivate(modifiers)){
-			this.range = "-";
-		} else if(m.isProtected(modifiers)){
-			this.range = "#";
-		} else {
-			this.range = "~";
-		}
-		
-		if(m.isFinal(modifiers)){
-			this.modifiers = this.modifiers.concat("f ");
-		}
-		if(m.isStatic(modifiers)){
-			this.modifiers = this.modifiers.concat("s ");
-		}
-		if(m.isSynchronized(modifiers)){
-			this.modifiers = this.modifiers.concat("sy ");
-		}
-		if(m.isAbstract(modifiers)){
-			this.modifiers = this.modifiers.concat("a ");
-		}
-		
-		this.range = this.modifiers + this.range;
-	}
-	
-	/**
-	 * Values of integer:
-	 * 1 - found in body
-	 * 2 - found in field as association
-	 * 4 - found in field as composition
-	 * 8 - found in method argument 
-	 * @return
-	 */
-	abstract public Map<String, Integer> globalTypes();
-	
-	abstract public String toString();
+    final private ModifierSet modifierSet = new ModifierSet();
+
+    protected String name;
+
+    protected String range;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        int modifiersValue = Integer.valueOf(range);
+
+        this.range = extractModifiers(modifiersValue) + prepareRange(modifiersValue);
+    }
+
+    private String extractModifiers(int modifiersValue) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (modifierSet.isFinal(modifiersValue)) {
+            stringBuilder.append("f ");
+        }
+        if (modifierSet.isStatic(modifiersValue)) {
+            stringBuilder.append("s ");
+        }
+        if (modifierSet.isSynchronized(modifiersValue)) {
+            stringBuilder.append("sy ");
+        }
+        if (modifierSet.isAbstract(modifiersValue)) {
+            stringBuilder.append("a ");
+        }
+        return stringBuilder.toString();
+    }
+
+    private String prepareRange(int modifiers) {
+        if (modifierSet.isPublic(modifiers)) {
+            return "+";
+        } else if (modifierSet.isPrivate(modifiers)) {
+            return "-";
+        } else if (modifierSet.isProtected(modifiers)) {
+            return "#";
+        } else {
+            return "~";
+        }
+    }
+
+    /**
+     * Values of integer:
+     * 1 - found in body
+     * 2 - found in field as association
+     * 4 - found in field as composition
+     * 8 - found in method argument
+     *
+     * @return
+     */
+    abstract public Map<String, Integer> globalTypes();
+
+    abstract public String toString();
 }
