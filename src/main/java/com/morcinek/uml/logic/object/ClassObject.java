@@ -1,7 +1,9 @@
 
 package com.morcinek.uml.logic.object;
 
+import com.morcinek.uml.logic.RelationType;
 import com.morcinek.uml.logic.Type;
+import com.sun.org.apache.bcel.internal.generic.RET;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -84,14 +86,14 @@ public class ClassObject extends DeclarationObject {
         // extendsClass
         for (Type type : this.extendsList) {
             if (type.getFullTypeName() != null) {
-                typesMap.put(type.getFullTypeName(), 16);
+                typesMap.put(type.getFullTypeName(), RelationType.GENERALIZATION);
             }
         }
 
         // implementsClass
         for (Type type : this.implementsList) {
             if (type.getFullTypeName() != null) {
-                typesMap.put(type.getFullTypeName(), 32);
+                typesMap.put(type.getFullTypeName(), RelationType.IMPLEMENTATION);
             }
         }
 

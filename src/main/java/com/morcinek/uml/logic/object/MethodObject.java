@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.morcinek.uml.logic.RelationType;
 import com.morcinek.uml.logic.Type;
 
 /**
@@ -60,14 +61,14 @@ public class MethodObject extends FieldObject {
 
     private void addMethodReturnType(Map<String, Integer> typesMap) {
         for (String typeName : type.getFullTypesNameList()) {
-            typesMap.put(typeName, 1);
+            typesMap.put(typeName, RelationType.FIELD_BODY);
         }
     }
 
     private void addMethodArguments(Map<String, Integer> typesMap) {
         for (Type argumentType : arguments.keySet()) {
             for (String typeName : argumentType.getFullTypesNameList()) {
-                typesMap.put(typeName, 8);
+                typesMap.put(typeName, RelationType.METHOD_ASSOCIATION);
             }
         }
     }
@@ -75,7 +76,7 @@ public class MethodObject extends FieldObject {
     private void addMethodBodyVariables(Map<String, Integer> typesMap) {
         for (Type variableType : variables) {
             for (String typeName : variableType.getFullTypesNameList()) {
-                typesMap.put(typeName, 1);
+                typesMap.put(typeName, RelationType.FIELD_BODY);
             }
         }
     }

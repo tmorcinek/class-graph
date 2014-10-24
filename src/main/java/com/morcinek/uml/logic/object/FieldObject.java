@@ -1,5 +1,6 @@
 package com.morcinek.uml.logic.object;
 
+import com.morcinek.uml.logic.RelationType;
 import com.morcinek.uml.logic.Type;
 
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class FieldObject extends DeclarationObject {
             fullTypesNameList.remove(type.getFullTypeName());
         }
         for (String type : fullTypesNameList) {
-            typesMap.put(type, 4);
+            typesMap.put(type, RelationType.FIELD_COMPOSITION);
         }
 
         return typesMap;
@@ -56,9 +57,9 @@ public class FieldObject extends DeclarationObject {
      */
     private int getDimensionValue() {
         if (type.getDimension() + dimension > 0) {
-            return 4;
+            return RelationType.FIELD_COMPOSITION;
         }
-        return 2;
+        return RelationType.FIELD_ASSOCIATION;
     }
 
     public String toString() {
