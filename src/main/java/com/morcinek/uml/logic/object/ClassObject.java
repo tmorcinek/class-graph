@@ -57,8 +57,8 @@ public class ClassObject extends DeclarationObject {
     }
 
 
-    public void addDeclaration(DeclarationObject p_field) {
-        this.declarations.add(p_field);
+    public void addDeclaration(DeclarationObject declarationObject) {
+        this.declarations.add(declarationObject);
     }
 
     //added to for printing
@@ -83,28 +83,16 @@ public class ClassObject extends DeclarationObject {
 
         // extendsClass
         for (Type type : this.extendsList) {
-//			List<String> fullTypesNameList = type.getFullTypesNameList();
             if (type.getFullTypeName() != null) {
                 typesMap.put(type.getFullTypeName(), 16);
-//				fullTypesNameList.remove(type.getFullTypeName());			
             }
-
-//			for(String typeName: fullTypesNameList){
-//				typesMap.put(typeName, 4);
-//			}
         }
 
         // implementsClass
         for (Type type : this.implementsList) {
-//			List<String> fullTypesNameList = type.getFullTypesNameList();
             if (type.getFullTypeName() != null) {
                 typesMap.put(type.getFullTypeName(), 32);
-//				fullTypesNameList.remove(type.getFullTypeName());			
             }
-
-//			for(String typeName: fullTypesNameList){
-//				typesMap.put(typeName, 4);
-//			}
         }
 
         // declarations
