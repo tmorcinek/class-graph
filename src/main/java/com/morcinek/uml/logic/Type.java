@@ -3,6 +3,9 @@ package com.morcinek.uml.logic;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Copyright 2014 Tomasz Morcinek. All rights reserved.
+ */
 public class Type {
 
     private List<Type> subTypes = new LinkedList<Type>();
@@ -55,24 +58,30 @@ public class Type {
     }
 
     public String toString() {
-        String ret = typeName;
-        // adds subtypes
-        if (!this.subTypes.isEmpty()) {
-            ret = ret.concat("<");
-            int i = 0;
-            for (Type subType : this.subTypes) {
-                if (i > 0) ret = ret.concat(", ");
-                ret = ret.concat(subType.toString());
-                i++;
-            }
-            ret = ret.concat(">");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(typeName);
+        if (!subTypes.isEmpty()) {
+            stringBuilder.append("<");
+            addSubtypes(stringBuilder);
+            stringBuilder.append(">");
         }
-        // adds array
-        for (int i = 0; i < this.dimension; i++) {
-            ret = ret.concat("[]");
-        }
+        addDimensions(stringBuilder);
 
-        return ret;
+        return stringBuilder.toString();
     }
 
+    private void addDimensions(StringBuilder stringBuilder) {
+        for (int i = 0; i < dimension; i++) {
+            stringBuilder.append("[]");
+        }
+    }
+
+    private void addSubtypes(StringBuilder stringBuilder) {
+        for (int i = 0; i < subTypes.size(); i++) {
+            if (i > 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(subTypes.get(i).toString());
+        }
+    }
 }
