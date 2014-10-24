@@ -26,20 +26,6 @@ public class ClassFinder {
 
             RelationsProvider relationsProvider = new RelationsProvider();
             final Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations(pathName);
-//			final ClassObject files = transform.getObject();
-//			SwingUtilities.invokeLater(new Runnable() {
-//
-//				public void run() {
-//					GuiView guiView = new GuiView("diagram", 3, 3);
-//					for (ClassObject object : files.getClassDeclarations()) {
-//						guiView.addClass(object);
-//					}
-//
-//					guiView.setRelations(relations);
-//
-//					guiView.showDiagramGrid();
-//				}
-//			});
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
