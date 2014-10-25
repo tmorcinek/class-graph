@@ -1,4 +1,4 @@
-package com.morcinek.uml;
+package com.morcinek.uml.relations;
 
 import org.fest.assertions.Assertions;
 import org.junit.Before;

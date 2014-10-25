@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.morcinek.uml.logic.RelationType;
+import com.morcinek.uml.relations.RelationType;
 import com.morcinek.uml.logic.Type;
 
 /**

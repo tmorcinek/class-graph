@@ -1,6 +1,7 @@
 package com.morcinek.uml;
 
 import com.morcinek.uml.graph.SimulationVisualization;
+import com.morcinek.uml.relations.RelationsProvider;
 
 import javax.swing.*;
 import java.util.HashMap;

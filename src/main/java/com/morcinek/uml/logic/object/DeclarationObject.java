@@ -61,8 +61,8 @@ public abstract class DeclarationObject {
 
     /**
      * @return <code>Map<String,Integer></code> map which reflects <code>type name</code>
-     * to <code>com.morcinek.uml.logic.RelationType</code> mapping.
-     * @see com.morcinek.uml.logic.RelationType
+     * to <code>com.morcinek.uml.relations.RelationType</code> mapping.
+     * @see com.morcinek.uml.relations.RelationType
      */
     public abstract Map<String, Integer> globalTypes();
 

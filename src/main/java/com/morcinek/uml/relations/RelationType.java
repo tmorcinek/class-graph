@@ -1,4 +1,4 @@
-package com.morcinek.uml.logic;
+package com.morcinek.uml.relations;
 
 /**
  * Copyright 2014 Tomasz Morcinek. All rights reserved.

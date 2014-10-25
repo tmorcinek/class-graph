@@ -1,7 +1,7 @@
 
 package com.morcinek.uml.logic.object;
 
-import com.morcinek.uml.logic.RelationType;
+import com.morcinek.uml.relations.RelationType;
 import com.morcinek.uml.logic.Type;
 
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 package com.morcinek.uml.logic.object;
 
-import com.morcinek.uml.logic.RelationType;
+import com.morcinek.uml.relations.RelationType;
 import com.morcinek.uml.logic.Type;
 
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public class FieldObject extends DeclarationObject {
      * Method checks if type is array.
      *
      * @return <code>RelationType.FIELD_ASSOCIATION</code> if field is object and <code>RelationType.FIELD_COMPOSITION</code> if filed is array.
-     * @see com.morcinek.uml.logic.RelationType
+     * @see com.morcinek.uml.relations.RelationType
      */
     private int getDimensionValue() {
         if (type.getDimension() + dimension > 0) {

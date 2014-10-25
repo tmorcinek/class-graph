@@ -1,4 +1,4 @@
-package com.morcinek.uml;
+package com.morcinek.uml.relations;
 
 import com.morcinek.uml.logic.Transform;
 import com.morcinek.uml.parser.java.JavaParser;
