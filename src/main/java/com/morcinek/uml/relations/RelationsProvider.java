@@ -2,6 +2,8 @@ package com.morcinek.uml.relations;
 
 import com.morcinek.uml.logic.Transform;
 import com.morcinek.uml.parser.java.JavaParser;
+import com.morcinek.uml.relations.filters.DirectoryFileFilter;
+import com.morcinek.uml.relations.filters.JavaFileFilter;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -16,33 +18,29 @@ import java.util.Map;
  */
 public class RelationsProvider {
 
-    private FileFilter javaFilter = new FileFilter() {
+    private final FileFilter javaFilter = new JavaFileFilter();
 
-        public boolean accept(File pathname) {
-            String fileName = pathname.getName();
-            return pathname.isFile() && fileName.endsWith(".java");
-        }
-    };
+    private final FileFilter dirFilter = new DirectoryFileFilter();
 
-    private FileFilter dirFilter = new FileFilter() {
-
-        public boolean accept(File pathname) {
-            return pathname.isDirectory();
-        }
-    };
-
-
-    public Map<String, HashMap<String, Integer>> provideRelations(String pathName){
+    public Map<String, HashMap<String, Integer>> provideRelations(String pathName) {
         Transform transform = new Transform();
-        parseFiles(pathName, transform);
+        processDirectoryFiles(getDirectoryFile(pathName), transform);
         return transform.getClassRelations();
     }
 
-    private void findFiles(File p_dir, Transform p_transform) {
+    private File getDirectoryFile(String pathName) {
+        File dir = new File(pathName);
+        if (!dir.isDirectory()) {
+            throw new IllegalArgumentException(dir.getAbsolutePath() + " is not a directory");
+        }
+        return dir;
+    }
+
+    private void processDirectoryFiles(File directory, Transform transform) {
 
         List<Element> parsedElements = new LinkedList<Element>();
 
-        for (File javaFile : p_dir.listFiles(javaFilter)) {
+        for (File javaFile : directory.listFiles(javaFilter)) {
             try {
                 parsedElements.add(JavaParser.main(javaFile.getAbsolutePath()));
             } catch (Exception e) {
@@ -53,24 +51,15 @@ public class RelationsProvider {
 
         // adding all elements from package
         for (Element parsedElement : parsedElements) {
-            p_transform.addFileElementToImports(parsedElement);
+            transform.addFileElementToImports(parsedElement);
         }
 
         for (Element parsedElement : parsedElements) {
-            p_transform.addFileElement(parsedElement);
+            transform.addFileElement(parsedElement);
         }
 
-        for (File dir : p_dir.listFiles(dirFilter)) {
-            findFiles(dir, p_transform);
+        for (File dir : directory.listFiles(dirFilter)) {
+            processDirectoryFiles(dir, transform);
         }
-    }
-
-    private void parseFiles(String p_pathName, Transform p_transform) throws IllegalArgumentException {
-
-        File dir = new File(p_pathName);
-        if (!dir.isDirectory())
-            throw new IllegalArgumentException(dir.getAbsolutePath() + " is not a directory");
-
-        findFiles(dir, p_transform);
     }
 }
