@@ -60,15 +60,11 @@ public abstract class DeclarationObject {
     }
 
     /**
-     * Values of integer:
-     * 1 - found in body
-     * 2 - found in field as association
-     * 4 - found in field as composition
-     * 8 - found in method argument
-     *
-     * @return
+     * @return <code>Map<String,Integer></code> map which reflects <code>type name</code>
+     * to <code>com.morcinek.uml.logic.RelationType</code> mapping.
+     * @see com.morcinek.uml.logic.RelationType
      */
-    abstract public Map<String, Integer> globalTypes();
+    public abstract Map<String, Integer> globalTypes();
 
-    abstract public String toString();
+    public abstract String toString();
 }

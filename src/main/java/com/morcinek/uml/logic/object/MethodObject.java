@@ -34,30 +34,14 @@ public class MethodObject extends FieldObject {
         return arguments;
     }
 
-    public String toString() {
-        String string = super.toString() + "(";
-        int i = 0;
-        for (Type type : arguments.keySet()) {
-            if (i > 0) {
-                string = string.concat(", ");
-            }
-            string = string.concat(type + " ");
-            i++;
-        }
-        string = string.concat(")");
-        return string;
-    }
-
-
     public Map<String, Integer> globalTypes() {
         Map<String, Integer> typesMap = new HashMap<String, Integer>();
-
         addMethodReturnType(typesMap);
         addMethodArguments(typesMap);
         addMethodBodyVariables(typesMap);
-
         return typesMap;
     }
+
 
     private void addMethodReturnType(Map<String, Integer> typesMap) {
         for (String typeName : type.getFullTypesNameList()) {
@@ -79,5 +63,21 @@ public class MethodObject extends FieldObject {
                 typesMap.put(typeName, RelationType.FIELD_BODY);
             }
         }
+    }
+
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(super.toString());
+        int i = 0;
+        for (Type type : arguments.keySet()) {
+            if (i > 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(type);
+            stringBuilder.append(" ");
+            i++;
+        }
+        stringBuilder.append(")");
+        return stringBuilder.toString();
     }
 }

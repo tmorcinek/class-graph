@@ -3,7 +3,6 @@ package com.morcinek.uml.logic.object;
 
 import com.morcinek.uml.logic.RelationType;
 import com.morcinek.uml.logic.Type;
-import com.sun.org.apache.bcel.internal.generic.RET;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -82,23 +81,30 @@ public class ClassObject extends DeclarationObject {
     @Override
     public Map<String, Integer> globalTypes() {
         Map<String, Integer> typesMap = new HashMap<String, Integer>();
+        addGeneralizations(typesMap);
+        addImplementations(typesMap);
+        addDeclarations(typesMap);
+        return typesMap;
+    }
 
-        // extendsClass
-        for (Type type : this.extendsList) {
+    private void addGeneralizations(Map<String, Integer> typesMap) {
+        for (Type type : extendsList) {
             if (type.getFullTypeName() != null) {
                 typesMap.put(type.getFullTypeName(), RelationType.GENERALIZATION);
             }
         }
+    }
 
-        // implementsClass
-        for (Type type : this.implementsList) {
+    private void addImplementations(Map<String, Integer> typesMap) {
+        for (Type type : implementsList) {
             if (type.getFullTypeName() != null) {
                 typesMap.put(type.getFullTypeName(), RelationType.IMPLEMENTATION);
             }
         }
+    }
 
-        // declarations
-        for (DeclarationObject declaration : this.declarations) {
+    private void addDeclarations(Map<String, Integer> typesMap) {
+        for (DeclarationObject declaration : declarations) {
             Map<String, Integer> declarationTypesMap = declaration.globalTypes();
             // iterujemy po kolejnych typach z deklaracji
             for (String typeName : declarationTypesMap.keySet()) {
@@ -111,12 +117,8 @@ public class ClassObject extends DeclarationObject {
 
             }
         }
-
-        return typesMap;
     }
 
-
-    //XXX poprawic
     @Override
     public String toString() {
         String headline = this.range + " <<" + this.classType + ">> " + this.name + "\n";

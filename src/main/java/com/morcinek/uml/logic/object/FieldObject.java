@@ -49,11 +49,10 @@ public class FieldObject extends DeclarationObject {
     }
 
     /**
-     * Values of integer:
-     * 2 - object (association)
-     * 4 - array (composition)
+     * Method checks if type is array.
      *
-     * @return <code>2</code> if field is object and <code>4</code> if filed is array.
+     * @return <code>RelationType.FIELD_ASSOCIATION</code> if field is object and <code>RelationType.FIELD_COMPOSITION</code> if filed is array.
+     * @see com.morcinek.uml.logic.RelationType
      */
     private int getDimensionValue() {
         if (type.getDimension() + dimension > 0) {
@@ -63,10 +62,15 @@ public class FieldObject extends DeclarationObject {
     }
 
     public String toString() {
-        String string = range + " " + type + " " + name;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(range);
+        stringBuilder.append(" ");
+        stringBuilder.append(type);
+        stringBuilder.append(" ");
+        stringBuilder.append(name);
         for (int i = 0; i < dimension; i++) {
-            string = string.concat("[]");
+            stringBuilder.append("[]");
         }
-        return string;
+        return stringBuilder.toString();
     }
 }
