@@ -26,7 +26,25 @@ public class RelationsExtractor {
         return classObjectsMap;
     }
 
-    public Map<String[], Integer> getRelations() {
+    public HashMap<String, HashMap<String, Integer>> getClassRelations() {
+
+        HashMap<String, HashMap<String, Integer>> classRelations = new HashMap<String, HashMap<String, Integer>>();
+        Map<String[], Integer> relations = getRelations();
+        for (String[] classes : relations.keySet()) {
+
+            if (classRelations.containsKey(classes[0])) {
+                classRelations.get(classes[0]).put(classes[1], relations.get(classes));
+            } else {
+                HashMap<String, Integer> relMap = new HashMap<String, Integer>();
+                relMap.put(classes[1], relations.get(classes));
+                classRelations.put(classes[0], relMap);
+            }
+        }
+
+        return classRelations;
+    }
+
+    private Map<String[], Integer> getRelations() {
 
         Map<String[], Integer> relations = new HashMap<String[], Integer>();
 
@@ -46,23 +64,5 @@ public class RelationsExtractor {
         }
 
         return relations;
-    }
-
-    public HashMap<String, HashMap<String, Integer>> getClassRelations() {
-
-        HashMap<String, HashMap<String, Integer>> classRelations = new HashMap<String, HashMap<String, Integer>>();
-        Map<String[], Integer> relations = getRelations();
-        for (String[] classes : relations.keySet()) {
-
-            if (classRelations.containsKey(classes[0])) {
-                classRelations.get(classes[0]).put(classes[1], relations.get(classes));
-            } else {
-                HashMap<String, Integer> relMap = new HashMap<String, Integer>();
-                relMap.put(classes[1], relations.get(classes));
-                classRelations.put(classes[0], relMap);
-            }
-        }
-
-        return classRelations;
     }
 }
