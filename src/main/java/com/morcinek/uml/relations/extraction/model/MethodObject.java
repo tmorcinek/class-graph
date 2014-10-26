@@ -1,4 +1,4 @@
-package com.morcinek.uml.logic.object;
+package com.morcinek.uml.relations.extraction.model;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.morcinek.uml.relations.RelationType;
-import com.morcinek.uml.logic.Type;
+import com.morcinek.uml.relations.extraction.Type;
+import com.morcinek.uml.relations.extraction.model.FieldObject;
 
 /**
  * Can contain methods and constructors

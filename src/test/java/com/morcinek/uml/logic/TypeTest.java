@@ -1,5 +1,6 @@
 package com.morcinek.uml.logic;
 
+import com.morcinek.uml.relations.extraction.Type;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 

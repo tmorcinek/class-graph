@@ -1,6 +1,6 @@
 package com.morcinek.uml.relations;
 
-import com.morcinek.uml.logic.Transform;
+import com.morcinek.uml.relations.extraction.Transform;
 import com.morcinek.uml.parser.java.JavaParser;
 import com.morcinek.uml.relations.filters.DirectoryFileFilter;
 import com.morcinek.uml.relations.filters.JavaFileFilter;

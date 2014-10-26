@@ -1,4 +1,4 @@
-package com.morcinek.uml.logic;
+package com.morcinek.uml.relations.extraction;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,9 +8,9 @@ import java.util.Map;
 import com.morcinek.uml.util.ElementUtil;
 import org.w3c.dom.Element;
 
-import com.morcinek.uml.logic.object.ClassObject;
-import com.morcinek.uml.logic.object.FieldObject;
-import com.morcinek.uml.logic.object.MethodObject;
+import com.morcinek.uml.relations.extraction.model.ClassObject;
+import com.morcinek.uml.relations.extraction.model.FieldObject;
+import com.morcinek.uml.relations.extraction.model.MethodObject;
 import com.morcinek.uml.parser.java.JavaParser.ModifierSet;
 
 /**

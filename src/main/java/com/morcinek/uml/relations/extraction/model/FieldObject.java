@@ -1,7 +1,8 @@
-package com.morcinek.uml.logic.object;
+package com.morcinek.uml.relations.extraction.model;
 
 import com.morcinek.uml.relations.RelationType;
-import com.morcinek.uml.logic.Type;
+import com.morcinek.uml.relations.extraction.Type;
+import com.morcinek.uml.relations.extraction.model.DeclarationObject;
 
 import java.util.HashMap;
 import java.util.List;

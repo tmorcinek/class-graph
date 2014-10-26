@@ -1,4 +1,4 @@
-package com.morcinek.uml.logic.object;
+package com.morcinek.uml.relations.extraction.model;
 
 import com.morcinek.uml.parser.java.JavaParser.ModifierSet;
 

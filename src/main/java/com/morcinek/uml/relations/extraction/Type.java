@@ -1,4 +1,4 @@
-package com.morcinek.uml.logic;
+package com.morcinek.uml.relations.extraction;
 
 import java.util.LinkedList;
 import java.util.List;
