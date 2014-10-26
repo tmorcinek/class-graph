@@ -1,7 +1,8 @@
 package com.morcinek.uml.relations;
 
-import com.morcinek.uml.relations.extraction.Transform;
+import com.morcinek.uml.relations.extraction.ObjectExtractor;
 import com.morcinek.uml.parser.java.JavaParser;
+import com.morcinek.uml.relations.extraction.RelationsExtractor;
 import com.morcinek.uml.relations.filters.DirectoryFileFilter;
 import com.morcinek.uml.relations.filters.JavaFileFilter;
 import org.w3c.dom.Element;
@@ -23,9 +24,10 @@ public class RelationsProvider {
     private final FileFilter dirFilter = new DirectoryFileFilter();
 
     public Map<String, HashMap<String, Integer>> provideRelations(String pathName) {
-        Transform transform = new Transform();
-        processDirectoryFiles(getDirectoryFile(pathName), transform);
-        return transform.getClassRelations();
+        ObjectExtractor objectExtractor = new ObjectExtractor();
+        processDirectoryFiles(getDirectoryFile(pathName), objectExtractor);
+        RelationsExtractor relationsExtractor = new RelationsExtractor(objectExtractor.getObject());
+        return relationsExtractor.getClassRelations();
     }
 
     private File getDirectoryFile(String pathName) {
@@ -36,7 +38,7 @@ public class RelationsProvider {
         return dir;
     }
 
-    private void processDirectoryFiles(File directory, Transform transform) {
+    private void processDirectoryFiles(File directory, ObjectExtractor objectExtractor) {
 
         List<Element> parsedElements = new LinkedList<Element>();
 
@@ -51,15 +53,15 @@ public class RelationsProvider {
 
         // adding all elements from package
         for (Element parsedElement : parsedElements) {
-            transform.addFileElementToImports(parsedElement);
+            objectExtractor.addFileElementToImports(parsedElement);
         }
 
         for (Element parsedElement : parsedElements) {
-            transform.addFileElement(parsedElement);
+            objectExtractor.addFileElement(parsedElement);
         }
 
         for (File dir : directory.listFiles(dirFilter)) {
-            processDirectoryFiles(dir, transform);
+            processDirectoryFiles(dir, objectExtractor);
         }
     }
 }

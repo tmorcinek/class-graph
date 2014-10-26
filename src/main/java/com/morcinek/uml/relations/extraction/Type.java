@@ -53,6 +53,10 @@ public class Type {
         return nameList;
     }
 
+    public String getTypeName() {
+        return typeName;
+    }
+
     public String getFullTypeName() {
         return fullTypeName;
     }
