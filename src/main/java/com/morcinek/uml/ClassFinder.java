@@ -26,7 +26,7 @@ public class ClassFinder {
             String pathName = developmentMode(args, true);
 
             RelationsProvider relationsProvider = new RelationsProvider();
-            final Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations(pathName);
+            final Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations(pathName, null);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {

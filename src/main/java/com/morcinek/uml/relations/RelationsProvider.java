@@ -7,12 +7,10 @@ import com.morcinek.uml.relations.filters.DirectoryFileFilter;
 import com.morcinek.uml.relations.filters.JavaFileFilter;
 import org.w3c.dom.Element;
 
+import javax.xml.ws.Holder;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Copyright 2014 Tomasz Morcinek. All rights reserved.
@@ -23,9 +21,9 @@ public class RelationsProvider {
 
     private final FileFilter dirFilter = new DirectoryFileFilter();
 
-    public Map<String, HashMap<String, Integer>> provideRelations(String pathName) {
+    public Map<String, HashMap<String, Integer>> provideRelations(String pathName, List<String> logMessages) {
         ObjectExtractor objectExtractor = new ObjectExtractor();
-        processDirectoryFiles(getDirectoryFile(pathName), objectExtractor);
+        processDirectoryFiles(getDirectoryFile(pathName), objectExtractor, logMessages);
         RelationsExtractor relationsExtractor = new RelationsExtractor(objectExtractor.getObject());
         return relationsExtractor.getClassRelations();
     }
@@ -38,16 +36,20 @@ public class RelationsProvider {
         return dir;
     }
 
-    private void processDirectoryFiles(File directory, ObjectExtractor objectExtractor) {
+    private void processDirectoryFiles(File directory, ObjectExtractor objectExtractor, List<String> logMessages) {
 
         List<Element> parsedElements = new LinkedList<Element>();
 
         for (File javaFile : directory.listFiles(javaFilter)) {
+            Holder<String> stringHolder = new Holder<String>();
             try {
-                parsedElements.add(JavaParser.main(javaFile.getAbsolutePath()));
+                parsedElements.add(JavaParser.main(javaFile.getAbsolutePath(), stringHolder));
             } catch (Exception e) {
-                System.out.println("Error in file: " + javaFile.getAbsolutePath());
-                throw new RuntimeException(e);
+                stringHolder.value = String.format("Other error '%s' in file '%s'.", e.getMessage(), javaFile.getAbsolutePath());
+            } finally {
+                if (logMessages != null) {
+                    logMessages.add(stringHolder.value);
+                }
             }
         }
 
@@ -61,7 +63,7 @@ public class RelationsProvider {
         }
 
         for (File dir : directory.listFiles(dirFilter)) {
-            processDirectoryFiles(dir, objectExtractor);
+            processDirectoryFiles(dir, objectExtractor, logMessages);
         }
     }
 }

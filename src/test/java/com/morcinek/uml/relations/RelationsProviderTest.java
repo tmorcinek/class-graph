@@ -1,13 +1,11 @@
 package com.morcinek.uml.relations;
 
+import com.sun.deploy.util.StringUtils;
 import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Copyright 2014 Tomasz Morcinek. All rights reserved.
@@ -23,7 +21,7 @@ public class RelationsProviderTest {
 
     @Test
     public void test1() throws Exception {
-        Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations("test-data/Test1");
+        Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations("test-data/Test1", null);
         String string = relationsToString(relations);
         Assertions.assertThat(string).isEqualTo(
                 "pl.edu.agh.morcinek.logic.Firma\n" +
@@ -44,8 +42,24 @@ public class RelationsProviderTest {
     }
 
     @Test
+    public void testLog1() throws Exception {
+        ArrayList<String> logMessages = new ArrayList<String>();
+        relationsProvider.provideRelations("test-data/Test1", logMessages);
+
+        Assertions.assertThat(StringUtils.join(logMessages, "\n")).isEqualTo(
+                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Firma.java' parsed successfully.\n" +
+                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Nauczyciel.java' parsed successfully.\n" +
+                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Osoba.java' parsed successfully.\n" +
+                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/OsobaInterface.java' parsed successfully.\n" +
+                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Pracownik.java' parsed successfully.\n" +
+                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Student.java' parsed successfully.\n" +
+                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Uczelnia.java' parsed successfully."
+        );
+    }
+
+    @Test
     public void test2() throws Exception {
-        Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations("test-data/Test2");
+        Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations("test-data/Test2", null);
         String string = relationsToString(relations);
         Assertions.assertThat(string).isEqualTo(
                 "pl.edu.agh.morcinek.logic.Osoba\n" +
@@ -57,7 +71,7 @@ public class RelationsProviderTest {
 
     @Test
     public void test3() throws Exception {
-        Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations("test-data/Test3");
+        Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations("test-data/Test3", null);
         String string = relationsToString(relations);
         Assertions.assertThat(string).isEqualTo(
                 "pl.edu.agh.morcinek.logic.Osoba\n" +
@@ -69,7 +83,7 @@ public class RelationsProviderTest {
 
     @Test
     public void test4() throws Exception {
-        Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations("test-data/Test4");
+        Map<String, HashMap<String, Integer>> relations = relationsProvider.provideRelations("test-data/Test4", null);
         String string = relationsToString(relations);
         Assertions.assertThat(string).isEqualTo(
                 "pl.edu.agh.morcinek.logic.Osoba\n" +

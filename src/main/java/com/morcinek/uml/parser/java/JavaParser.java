@@ -2,8 +2,11 @@
 package com.morcinek.uml.parser.java;
 
 import java.io.*;
+import javax.xml.ws.Holder;
 import com.morcinek.uml.util.*;
 import org.w3c.dom.*;
+
+import javax.xml.ws.Holder;
 
 /**
  * Grammar to parse Java version 1.5
@@ -102,7 +105,7 @@ public class JavaParser implements JavaParserConstants {
       catch(Exception e) { e.printStackTrace(); }
    }
 
-  public static Element main(String fileName) {
+  public static Element main(String fileName, Holder<String> holder) {
     JavaParser parser;
     try
     {
@@ -110,20 +113,19 @@ public class JavaParser implements JavaParserConstants {
     }
     catch (java.io.FileNotFoundException e)
     {
-      System.out.println("Java Parser Version 1.1:  File " + fileName + " not found.");
+      holder.value = String.format("Java Parser Version 1.1:  File '%s' not found.", fileName);
       return null;
     }
 
     Element element = null;
     try
     {
-          element = parser.CompilationUnit();
-      System.out.println("Java Parser Version 1.1: "+  fileName +" parsed successfully.");
+      element = parser.CompilationUnit();
+        holder.value = String.format("Java Parser Version 1.1: '%s' parsed successfully.", fileName);
     }
     catch (ParseException e)
     {
-      System.out.println(e.getMessage());
-      System.out.println("Java Parser Version 1.1:  Encountered errors during parse.");
+        holder.value = String.format("Java Parser Version 1.1: Encountered error '%s' while parsing '%s'.", e.getMessage(), fileName);
     }
 
     return element;
