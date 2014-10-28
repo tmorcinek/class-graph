@@ -89,11 +89,13 @@ public class ElementUtil {
     private static List<Element> getAllChildElements(Element p_element) {
         List<Element> elementsList = new LinkedList<Element>();
 
-        NodeList nodeList = p_element.getChildNodes();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node = nodeList.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                elementsList.add((Element) node);
+        if (p_element != null) {
+            NodeList nodeList = p_element.getChildNodes();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    elementsList.add((Element) node);
+                }
             }
         }
 

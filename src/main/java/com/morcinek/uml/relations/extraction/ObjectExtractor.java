@@ -301,9 +301,12 @@ public class ObjectExtractor {
 
     private static List<String> getImportsNameList(Element element) {
         List<String> nameList = new LinkedList<String>();
-        Element importsElement = ElementUtil.getChildElementsByName(element, "imports").get(0);
-        for (Element importElement : ElementUtil.getChildElementsByName(importsElement, "import")) {
-            nameList.add(importElement.getAttribute("name"));
+        List<Element> imports = ElementUtil.getChildElementsByName(element, "imports");
+        if (!imports.isEmpty()) {
+            Element importsElement = imports.get(0);
+            for (Element importElement : ElementUtil.getChildElementsByName(importsElement, "import")) {
+                nameList.add(importElement.getAttribute("name"));
+            }
         }
         return nameList;
     }
