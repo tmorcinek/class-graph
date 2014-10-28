@@ -31,7 +31,7 @@ public class SimulationVisualization extends JFrame implements ActionListener {
     public SimulationVisualization(Map<String, HashMap<String, Integer>> relations) {
         super("title");
         this.relations = relations;
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         initialize();
         prepareGraph();
     }

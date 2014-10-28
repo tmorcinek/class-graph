@@ -1,6 +1,5 @@
 package com.morcinek.uml.relations;
 
-import com.sun.deploy.util.StringUtils;
 import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,14 +45,14 @@ public class RelationsProviderTest {
         ArrayList<String> logMessages = new ArrayList<String>();
         relationsProvider.provideRelations("test-data/Test1", logMessages);
 
-        Assertions.assertThat(StringUtils.join(logMessages, "\n")).isEqualTo(
+        Assertions.assertThat(listToString(logMessages, "\n")).isEqualTo(
                 "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Firma.java' parsed successfully.\n" +
-                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Nauczyciel.java' parsed successfully.\n" +
-                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Osoba.java' parsed successfully.\n" +
-                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/OsobaInterface.java' parsed successfully.\n" +
-                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Pracownik.java' parsed successfully.\n" +
-                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Student.java' parsed successfully.\n" +
-                "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Uczelnia.java' parsed successfully."
+                        "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Nauczyciel.java' parsed successfully.\n" +
+                        "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Osoba.java' parsed successfully.\n" +
+                        "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/OsobaInterface.java' parsed successfully.\n" +
+                        "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Pracownik.java' parsed successfully.\n" +
+                        "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Student.java' parsed successfully.\n" +
+                        "Java Parser Version 1.1: '/Users/tomaszmorcinek/Developer/java/repositories/morcinek/class-graph/test-data/Test1/src/pl/edu/agh/morcinek/logic/Uczelnia.java' parsed successfully.\n"
         );
     }
 
@@ -107,6 +106,15 @@ public class RelationsProviderTest {
                 stringBuilder.append(String.format(" > %s : %s", name, map.get(name)));
                 stringBuilder.append("\n");
             }
+        }
+        return stringBuilder.toString();
+    }
+
+    private String listToString(List<String> logMessages, String separator) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String string : logMessages) {
+            stringBuilder.append(string);
+            stringBuilder.append(separator);
         }
         return stringBuilder.toString();
     }
