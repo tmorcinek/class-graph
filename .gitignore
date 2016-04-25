@@ -25,3 +25,5 @@ gen
 app/res/raw/
 classes/
 tmp/
+
+libs/
